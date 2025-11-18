@@ -67,6 +67,9 @@ def generate_diet_plan(gender, food_preference, bmi_category):
 def generate_veg_diet(day, gender, calories, bmi_category):
     """Generate vegetarian diet for a specific day"""
     
+    # Calculate daily calorie summary
+    daily_calories = f"Daily Target: {calories} calories"
+    
     # Common vegetarian breakfast options
     breakfast_options = {
         "Monday": {
@@ -203,11 +206,15 @@ def generate_veg_diet(day, gender, calories, bmi_category):
         "breakfast": breakfast_options[day],
         "lunch": lunch_options[day],
         "dinner": dinner_options[day],
-        "snacks": snacks
+        "snacks": snacks,
+        "daily_calories": daily_calories
     }
 
 def generate_non_veg_diet(day, gender, calories, bmi_category):
     """Generate non-vegetarian diet for a specific day"""
+    
+    # Calculate daily calorie summary
+    daily_calories = f"Daily Target: {calories} calories"
     
     # Common non-vegetarian breakfast options
     breakfast_options = {
@@ -345,7 +352,8 @@ def generate_non_veg_diet(day, gender, calories, bmi_category):
         "breakfast": breakfast_options[day],
         "lunch": lunch_options[day],
         "dinner": dinner_options[day],
-        "snacks": snacks
+        "snacks": snacks,
+        "daily_calories": daily_calories
     }
 
 def generate_workout_plan(gender, intensity):
