@@ -218,19 +218,148 @@
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Form validation
         const contactForm = document.getElementById('contact-form');
         
         if (contactForm) {
             contactForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
                 if (!contactForm.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+                    contactForm.classList.add('was-validated');
+                    return;
                 }
                 
-                contactForm.classList.add('was-validated');
+                // Show loading state
+                const submitBtn = contactForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = 'Sending...';
+                submitBtn.disabled = true;
+                
+                // Submit form via AJAX
+                const formData = new FormData(contactForm);
+                
+                fetch('{{ url_for("submit_contact") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showNotification('📧 Message sent successfully!', 'success');
+                        contactForm.reset();
+                        contactForm.classList.remove('was-validated');
+                    } else {
+                        showNotification('❌ Failed to send message. Please try again.', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showNotification('❌ Failed to send message. Please try again.', 'error');
+                })
+                .finally(() => {
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                });
             });
         }
     });
+    
+    function showNotification(message, type = 'info') {
+        const notification = document.createElement('div');
+        notification.className = `notification ${type}`;
+        notification.innerHTML = `
+            <div class="notification-content">
+                <span class="notification-message">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        setTimeout(() => notification.classList.add('show'), 100);
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.remove();
+                    }
+                }, 300);
+            }
+        }, 4000);
+    }
 </script>
+
+<style>
+.notification {
+    position: fixed;
+    top: 6rem;
+    right: 1rem;
+    background: rgba(31, 42, 51, 0.95);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 15px;
+    padding: 1rem 1.5rem;
+    color: white;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    max-width: 300px;
+    word-wrap: break-word;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.notification.show {
+    transform: translateX(0);
+}
+
+.notification.success {
+    border-left: 4px solid #00f2fe;
+}
+
+.notification.error {
+    border-left: 4px solid #f5576c;
+}
+
+.notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.notification-message {
+    flex: 1;
+    font-weight: 600;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+@media (max-width: 768px) {
+    .notification {
+        top: 4.5rem;
+        right: 0.5rem;
+        left: 0.5rem;
+        max-width: none;
+    }
+}
+</style>
 {% endblock %}
