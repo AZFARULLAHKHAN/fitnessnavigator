@@ -1,4 +1,5 @@
 import logging
+import json
 from flask import render_template, request, redirect, url_for, flash, session, jsonify
 from utils import generate_workout_plan, generate_diet_plan, calculate_bmi
 from app import app
@@ -8,26 +9,107 @@ import requests
 from flask import send_file
 from food_recognition import FoodRecognitionAPI
 
-# Simple AI responses for fitness chatbot
-def get_ai_response(user_message):
-    """Generate contextual AI-like responses for fitness queries"""
+# Enhanced AI responses for fitness chatbot with context awareness
+def get_ai_response(user_message, context=None):
+    """Generate contextual AI-like responses for fitness queries with page context awareness"""
     import random
+    import json
+    import os
+    
+    # Check if we should use external AI API
+    ai_provider = os.environ.get('AI_PROVIDER', 'LOCAL')
+    openai_key = os.environ.get('OPENAI_API_KEY')
+    
+    if ai_provider == 'OPENAI' and openai_key and openai_key != 'your-openai-api-key-here':
+        try:
+            from openai import OpenAI
+            client = OpenAI(api_key=openai_key)
+            
+            context_str = ""
+            if context:
+                context_str = f"User context: {json.dumps(context, indent=2)}\n\n"
+            
+            prompt = f"{context_str}You are a fitness AI assistant. Answer this question in a helpful, motivating way: {user_message}"
+            
+            response = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=150
+            )
+            return response.choices[0].message.content.strip()
+        except Exception as e:
+            logging.error(f"OpenAI API error: {e}")
+            # Fall back to local responses
     
     msg = user_message.lower()
     
-    # Contextual responses based on user input - check specific requests first
-    if any(word in msg for word in ['diet', 'food', 'nutrition', 'meal']) and not any(word in msg for word in ['hydrat', 'water']):
+    # Parse context if provided
+    user_data = {}
+    workout_plan = {}
+    current_page = ""
+    
+    if context:
+        try:
+            if isinstance(context, str):
+                context_data = json.loads(context)
+            else:
+                context_data = context
+            user_data = context_data.get('userData', {})
+            workout_plan = context_data.get('workoutPlan', {})
+            current_page = context_data.get('currentPage', '')
+        except:
+            pass
+    
+    # Check for greetings first (exact matches to avoid conflicts)
+    if msg.strip() in ['hi', 'hello', 'hey'] or msg.startswith(('hi ', 'hello ', 'hey ')):
         return random.choice([
-            "Nutrition is 70% of fitness! Focus on: lean proteins (chicken, fish, beans), complex carbs (oats, quinoa), healthy fats (avocado, nuts), lots of vegetables. What's your dietary preference?",
-            "For a healthy diet: Eat every 3-4 hours, include protein in each meal, drink 8-10 glasses water daily, limit processed foods. Any specific nutrition goals?",
-            "Great nutrition tips: Meal prep on Sundays, eat colorful vegetables, choose whole grains over refined, healthy snacks like fruits/nuts. Do you have any food allergies?"
+            "Hello! I'm your AI fitness coach. I can help with workouts, nutrition, motivation, and health questions. What's on your mind?",
+            "Hi there! Ready to crush your fitness goals? Ask me about workouts, diet, or any health topic!",
+            "Hey! I'm here to support your fitness journey. What would you like to know?"
         ])
     
-    elif any(word in msg for word in ['hi', 'hello', 'hey']):
+    # Workout and exercise responses
+    elif any(word in msg for word in ['workout', 'exercise', 'training', 'gym', 'fitness']):
         return random.choice([
-            "Hello! I'm your personal fitness assistant. What are your fitness goals today?",
-            "Hi there! Ready to crush your fitness goals? What can I help you with?",
-            "Hey! I'm here to help you on your fitness journey. What would you like to know?"
+            "Workouts should include: 1) Compound movements (squats, deadlifts), 2) Progressive overload, 3) Proper rest between sessions. Start with 3x/week full-body routines. What's your experience level?",
+            "Effective workout structure: Warm-up (5-10min) -> Strength training (20-40min) -> Cardio (15-30min) -> Cool-down (5-10min). Focus on form over intensity. Need specific exercises?",
+            "Key workout principles: Progressive overload, consistency, proper form, adequate recovery. Mix strength training with cardio for best results. What are your fitness goals?"
+        ])
+    
+    # Diet and nutrition responses  
+    elif any(word in msg for word in ['diet', 'food', 'nutrition', 'meal', 'eat']):
+        if user_data:
+            bmi = user_data.get('BMI', '')
+            food_pref = user_data.get('Food Preference', '')
+            responses = [
+                f"Based on your {food_pref} preference and BMI of {bmi}, I see great potential! Your diet plan is personalized for optimal results. Want tips to maximize nutrition absorption?",
+                f"Looking at your profile - {food_pref} diet with BMI {bmi} - here's a pro tip: Time your carbs around workouts for better energy and recovery. What's your biggest nutrition challenge?",
+                f"Your {food_pref} approach is smart! With your current BMI ({bmi}), focus on nutrient timing. Did you know eating protein within 30 minutes post-workout boosts muscle synthesis by 25%?"
+            ]
+            if bmi and 'overweight' in bmi.lower():
+                responses.append(f"For your BMI category ({bmi}), intermittent fasting could accelerate results. Try 16:8 method - eat within 8 hours, fast 16. Studies show 3-8% weight loss in 3-24 weeks!")
+            return random.choice(responses)
+        else:
+            return random.choice([
+                "Nutrition is 70% of fitness! Beyond basic macros, consider meal timing, food combinations, and gut health. Fermented foods boost nutrient absorption by 15-20%!",
+                "Pro nutrition hack: Eat the rainbow! Different colored foods provide unique phytonutrients. Purple foods (blueberries, eggplant) boost brain health and recovery!",
+                "Advanced tip: Combine vitamin C foods with iron-rich foods for 3x better absorption. Think spinach salad with strawberries or lentils with bell peppers!"
+            ])
+    
+    # Space/astronomy questions
+    elif any(word in msg for word in ['moon', 'space', 'astronaut', 'nasa', 'apollo']):
+        return random.choice([
+            "Neil Armstrong was the first person to step on the moon on July 20, 1969! Speaking of reaching new heights - your fitness journey is like space exploration. Each workout is a step toward your personal moon landing. What's your fitness mission?",
+            "The moon landing was July 20, 1969 with Neil Armstrong! Fun fact: Astronauts lose muscle mass in zero gravity, which is why they exercise 2.5 hours daily in space. Gravity is your friend for building strength!",
+            "Neil Armstrong made that giant leap in 1969! Just like space missions need precise planning, your fitness goals need a structured approach. Ready to launch your transformation?"
+        ])
+    
+    # Cardio specific responses
+    elif any(word in msg for word in ['cardio', 'running', 'cycling', 'swimming']):
+        return random.choice([
+            "Cardio benefits: Improves heart health, burns calories, boosts mood. Try: 150min moderate or 75min vigorous weekly. Mix it up - running, cycling, swimming, dancing!",
+            "Great cardio options: HIIT (20min), steady-state (30-45min), or fun activities like dancing, hiking, sports. What type of cardio do you enjoy most?",
+            "Cardio tips: Start slow, build gradually, listen to your body. Aim for 3-5 sessions per week. Mix high and low intensity for best results!"
         ])
     
     elif any(phrase in msg for phrase in ['best time', 'when to workout', 'time to exercise', 'workout time']):
@@ -50,12 +132,20 @@ def get_ai_response(user_message):
             "Great hydration question! Start your day with water, keep a bottle nearby, drink before you feel thirsty. Proper hydration improves performance and energy!"
         ])
     
-    elif any(word in msg for word in ['workout', 'exercise']) and not any(word in msg for word in ['hydrat', 'water']):
-        return random.choice([
-            "Here's a solid routine: Push-ups (3x8-12), Squats (3x12-15), Planks (3x30s), and 20min walk. Adjust reps based on your level. How often do you currently exercise?",
-            "Try this full-body workout: Burpees (3x5), Lunges (3x10 each leg), Mountain climbers (3x20), Rest 1min between sets. What equipment do you have access to?",
-            "Effective workout: Upper body (Mon/Wed), Lower body (Tue/Thu), Cardio (Fri), Rest weekends. This prevents overtraining. Need specific exercises for any day?"
-        ])
+    elif 'workout_plan' in current_page or any(word in msg for word in ['workout', 'exercise']):
+        if workout_plan:
+            workout_days = list(workout_plan.keys())
+            return random.choice([
+                f"I see your {len(workout_days)}-day plan! Pro tip: Your {workout_days[0] if workout_days else 'Monday'} workout can be enhanced with pre-activation exercises. Try glute bridges before squats for 23% better activation!",
+                f"Your workout structure is solid! Want to level up? Add tempo training - 3 seconds down, 1 second up. This increases time under tension and muscle growth by 15-20%!",
+                f"Looking at your plan, here's an advanced technique: Cluster sets! Instead of straight sets, break them into mini-sets with 15-20 second rests. Increases total volume by 10-15%!"
+            ])
+        else:
+            return random.choice([
+                "Beyond basic exercises, let's talk periodization! Your body adapts in 4-6 weeks. Vary intensity, volume, and exercise selection to prevent plateaus. What's your training experience?",
+                "Advanced training tip: Use RPE (Rate of Perceived Exertion) scale 1-10. Train at RPE 7-8 for strength, RPE 6-7 for hypertrophy. This auto-regulates based on daily readiness!",
+                "Workout hack: Compound movements first, isolation last. Deadlifts before bicep curls! This maximizes strength gains and prevents injury. What's your primary goal?"
+            ])
     
 
     
@@ -96,14 +186,116 @@ def get_ai_response(user_message):
         return "Sleep is crucial for fitness! Aim for 7-9 hours nightly. During sleep, your body repairs muscles, releases growth hormone. Poor sleep = slower recovery, increased injury risk, and weight gain."
     
     elif any(word in msg for word in ['stress', 'anxiety', 'mental']):
-        return "Exercise is amazing for mental health! It releases endorphins, reduces stress hormones, improves mood and sleep. Even 10 minutes helps. Try walking, yoga, or any activity you enjoy!"
+        return random.choice([
+            "Exercise is nature's antidepressant! It increases BDNF (brain fertilizer), reduces cortisol by 23%, and creates new neural pathways. Even 10 minutes of movement changes brain chemistry!",
+            "Mental fitness hack: Exercise + mindfulness = superpower! Try 'mindful movement' - focus on breath during workouts. This activates the parasympathetic nervous system for deeper calm.",
+            "Stress and fitness are connected! Chronic stress blocks muscle growth and fat loss. Combat it with: morning sunlight (regulates cortisol), cold showers (builds resilience), and gratitude journaling."
+        ])
+    
+    elif any(word in msg for word in ['time', 'busy', 'schedule', 'quick']):
+        return random.choice([
+            "Time-efficient fitness: HIIT burns calories for 24+ hours post-workout (EPOC effect). Just 15 minutes of burpees, mountain climbers, and jump squats = gym session!",
+            "Busy person's secret: Micro-workouts! 2 minutes every hour beats 1 hour once. Try: desk push-ups, stair climbing, calf raises during calls. Your metabolism stays elevated all day!",
+            "Time hack: Compound movements work multiple muscles simultaneously. One squat-to-press works 8+ muscle groups. Maximum results, minimum time!"
+        ])
+    
+    elif any(word in msg for word in ['plateau', 'stuck', 'progress', 'results']):
+        return random.choice([
+            "Plateau buster: Your body adapts in 4-6 weeks. Change ONE variable: increase weight, reps, tempo, or rest time. Progressive overload is the key to continuous growth!",
+            "Stuck? Try periodization! Week 1-2: High reps (12-15), Week 3-4: Medium (8-12), Week 5-6: Heavy (4-6). This confuses muscles and sparks new growth!",
+            "Results plateau? Check your sleep! Poor sleep reduces muscle protein synthesis by 18% and increases fat storage. Aim for 7-9 hours for optimal body composition."
+        ])
+    
+    elif any(word in msg for word in ['energy', 'tired', 'fatigue', 'exhausted']):
+        return random.choice([
+            "Energy optimization: Your mitochondria (cellular powerhouses) multiply with exercise! Start with 10-minute walks, gradually increase. More mitochondria = more energy!",
+            "Fatigue fighter: Iron deficiency affects 25% of women. Combine iron-rich foods (spinach, lentils) with vitamin C (citrus, berries) for 3x better absorption!",
+            "Energy hack: Eat protein every 3-4 hours to stabilize blood sugar. Roller-coaster glucose = energy crashes. Steady fuel = steady energy!"
+        ])
+    
+    elif any(word in msg for word in ['social', 'friends', 'family', 'support']):
+        return random.choice([
+            "Social fitness is powerful! People with workout buddies are 95% more likely to reach goals. Your social circle influences your health habits more than genetics!",
+            "Family fitness tip: Make it fun, not forced. Dance parties, hiking adventures, sports games. Kids who see active parents are 6x more likely to stay active as adults!",
+            "Support system hack: Share your goals publicly. Social accountability increases success rates by 65%. Your community becomes your superpower!"
+        ])
+    
+    elif any(word in msg for word in ['weather', 'season', 'winter', 'summer', 'cold', 'hot']):
+        return random.choice([
+            "Weather warrior tips: Cold weather burns more calories (thermogenesis)! Winter workouts can burn 15-30% more calories. Embrace the chill!",
+            "Seasonal fitness: Summer = hydration focus (drink 16-24oz 2 hours before exercise), Winter = vitamin D supplements (affects mood and muscle function).",
+            "Weather adaptation: Hot weather improves heat tolerance and cardiovascular efficiency. Cold weather builds mental toughness and brown fat (calorie-burning fat)!"
+        ])
+    
+    elif any(word in msg for word in ['technology', 'apps', 'tracker', 'phone', 'gadget']):
+        return random.choice([
+            "Tech + fitness = game-changer! Heart rate variability (HRV) tracking shows recovery status. High HRV = ready to train hard, Low HRV = focus on recovery.",
+            "Fitness tech tip: Step counters are motivating, but don't obsess over 10,000 steps. Focus on intensity too! 7,000 quality steps > 10,000 lazy steps.",
+            "Smart use of tech: Use apps for tracking, not dependency. The best fitness tracker is your body awareness - energy levels, sleep quality, mood, and performance!"
+        ])
     
     else:
-        return random.choice([
-            f"Great question about '{user_message}'! I can help with workouts, nutrition, motivation, injury prevention, supplements, and more. What specific fitness aspect interests you most?",
-            f"I'd love to help with '{user_message}'! I cover exercise routines, diet advice, mental health, recovery tips, and fitness planning. What would you like to know more about?",
-            f"Interesting topic - '{user_message}'! I can assist with strength training, cardio, flexibility, nutrition, motivation, and wellness. How can I help you achieve your fitness goals?"
-        ])
+        # Creative responses that actually answer the question first, then connect to fitness
+        if 'moon' in user_message.lower():
+            creative_responses = [
+                "Neil Armstrong was the first person to step on the moon on July 20, 1969! Speaking of achieving the impossible - fitness is about taking small steps toward big goals. What's your personal 'moon shot' fitness goal?"
+            ]
+        elif any(word in user_message.lower() for word in ['meaning', 'life', 'purpose']):
+            creative_responses = [
+                "The meaning of life is deeply personal, but many find purpose in growth, connection, and contribution. Fitness embodies all three - you grow stronger, connect with your body, and contribute to your future self!"
+            ]
+        elif 'physics' in user_message.lower():
+            creative_responses = [
+                "Physics is fascinating! It governs everything from quantum mechanics to gravity. Speaking of physics - your body follows the same laws: force (exercise) creates acceleration (progress), and momentum builds over time!"
+            ]
+        else:
+            creative_responses = [
+                f"That's an interesting topic! While I'm primarily a fitness coach, I love connecting everything to health and wellness. How can I help you with your fitness goals today?",
+                f"Great question! I specialize in fitness and health topics. What would you like to know about workouts, nutrition, or wellness?",
+                f"I'm here to help with fitness-related questions! What aspect of health and fitness interests you most?"
+            ]
+        
+        # Add context-specific creative responses
+        if user_data:
+            age = user_data.get('Age', '')
+            gender = user_data.get('Gender', '')
+            bmi = user_data.get('BMI', '')
+            
+            if age:
+                try:
+                    age_num = int(age)
+                    if age_num < 25:
+                        creative_responses.append(f"At {age}, your neuroplasticity is peak! Your brain forms new habits 40% faster than older adults. This is your golden window to build unshakeable fitness habits!")
+                    elif 25 <= age_num <= 35:
+                        creative_responses.append(f"Age {age} is the sweet spot! You have energy + wisdom. Your testosterone/estrogen levels are optimal for muscle building. Maximize this decade!")
+                    elif 35 < age_num <= 50:
+                        creative_responses.append(f"At {age}, you're entering your power years! Focus on strength training - it prevents age-related muscle loss and keeps your metabolism high. You're just getting started!")
+                    elif age_num > 50:
+                        creative_responses.append(f"Age {age} is liberation! You know what works for YOUR body. Studies show people over 50 who exercise regularly have the biological age of someone 20 years younger!")
+                except:
+                    pass
+            
+            if gender:
+                if gender.lower() in ['female', 'woman']:
+                    creative_responses.append("Women's fitness fact: You have better fat oxidation during exercise! Your body is naturally efficient at burning fat for fuel. Embrace your metabolic superpower!")
+                elif gender.lower() in ['male', 'man']:
+                    creative_responses.append("Men's fitness advantage: Higher muscle mass means higher metabolic rate. You burn more calories at rest! Use this to your advantage with strength training.")
+            
+            if bmi:
+                creative_responses.append(f"Your BMI tells one story, but body composition tells the real story! Muscle weighs more than fat. Focus on how you feel, your energy levels, and strength gains!")
+        
+        # Add some completely out-of-the-box responses that connect fitness to life
+        philosophical_responses = [
+            f"'{user_message}' makes me think: Fitness is like compound interest for your body. Small daily investments create exponential returns in energy, confidence, and longevity!",
+            f"Interesting perspective on '{user_message}'! You know what's wild? Your muscles have memory. Even after breaks, they rebuild faster than the first time. Your body never forgets your efforts!",
+            f"'{user_message}' reminds me that fitness is the ultimate life skill. It teaches discipline, resilience, goal-setting, and self-love. Every workout is practice for life's challenges!",
+            f"Deep thought about '{user_message}': Your body is the only place you'll live your entire life. Investing in it isn't vanity - it's the smartest investment you'll ever make!",
+            f"'{user_message}' connects to something profound: Movement is medicine. It prevents disease, boosts immunity, enhances creativity, and adds years to your life and life to your years!"
+        ]
+        
+        # Randomly choose between creative and philosophical responses
+        all_responses = creative_responses + philosophical_responses
+        return random.choice(all_responses)
 
 # Initialize AI system
 logging.info("Fitness AI assistant initialized successfully")
@@ -416,19 +608,43 @@ def analyze_food():
 @app.route('/chat', methods=['POST'])
 def chat():
     try:
-        user_message = request.json.get('message', '')
-        if not user_message:
-            return jsonify({'error': 'No message provided'}), 400
-
-        logging.info(f"Chat message received: {user_message}")
+        # Handle both JSON and form data
+        if request.is_json:
+            data = request.json or {}
+        else:
+            data = request.form.to_dict()
         
-        # Use our AI response function
-        response_text = get_ai_response(user_message)
+        user_message = data.get('message', '').strip()
+        context = data.get('context', {})
+        
+        logging.info(f"Chat request - Message: '{user_message}', Context type: {type(context)}")
+        
+        if not user_message:
+            logging.error("No message provided in chat request")
+            return jsonify({'error': 'No message provided'}), 400
+        
+        # Extract actual user message if context is included in message
+        if isinstance(user_message, str) and 'Context:' in user_message and 'User Question:' in user_message:
+            parts = user_message.split('User Question:')
+            if len(parts) > 1:
+                actual_message = parts[1].strip()
+                context_part = parts[0].replace('Context:', '').strip()
+                try:
+                    context = json.loads(context_part)
+                except Exception as ctx_error:
+                    logging.warning(f"Failed to parse context: {ctx_error}")
+                user_message = actual_message
+        
+        # Use our enhanced AI response function with context
+        logging.info(f"Calling get_ai_response with message: '{user_message}'")
+        response_text = get_ai_response(user_message, context)
+        logging.info(f"AI response generated: '{response_text[:100]}...'")
+        
         return jsonify({'response': response_text})
         
     except Exception as e:
-        logging.error(f"Chat error: {str(e)}")
-        return jsonify({'error': 'Chat service temporarily unavailable. Please try again.'}), 500
+        logging.error(f"Chat error: {type(e).__name__}: {str(e)}", exc_info=True)
+        return jsonify({'error': f'Sorry, I encountered an error: {str(e)}'}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)

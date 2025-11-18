@@ -86,6 +86,7 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+__MACOSX/
 
 # Project specific
 *.pdf
@@ -107,3 +108,14 @@ yarn-error.log*
 # Replit specific
 .replit
 replit.nix
+
+# Cache
+.cache/
+
+# Database
+*.db
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.temp
