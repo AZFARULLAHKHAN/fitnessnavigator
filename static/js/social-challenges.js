@@ -157,13 +157,32 @@ class SocialChallenges {
 
         // Challenge actions
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('join-challenge')) {
-                const challengeId = e.target.dataset.challengeId;
+            if (e.target.classList.contains('join-challenge') || e.target.closest('.join-challenge')) {
+                const button = e.target.classList.contains('join-challenge') ? e.target : e.target.closest('.join-challenge');
+                const challengeId = button.dataset.challengeId;
                 this.joinChallenge(challengeId);
+                e.preventDefault();
+                e.stopPropagation();
             }
-            if (e.target.classList.contains('share-progress')) {
-                const challengeId = e.target.dataset.challengeId;
+            if (e.target.classList.contains('share-progress') || e.target.closest('.share-progress')) {
+                const button = e.target.classList.contains('share-progress') ? e.target : e.target.closest('.share-progress');
+                const challengeId = button.dataset.challengeId;
                 this.shareProgress(challengeId);
+                e.preventDefault();
+                e.stopPropagation();
+            }
+        });
+
+        // Add hover effects
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.classList.contains('btn-modern') || e.target.classList.contains('btn-secondary')) {
+                e.target.style.transform = 'scale(1.05)';
+            }
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.classList.contains('btn-modern') || e.target.classList.contains('btn-secondary')) {
+                e.target.style.transform = 'scale(1)';
             }
         });
     }
@@ -231,8 +250,8 @@ class SocialChallenges {
                 </div>
                 
                 <div class="challenge-actions">
-                    <button class="btn-modern join-challenge" data-challenge-id="${challenge.id}">
-                        ${challenge.current > 0 ? 'Continue' : 'Join Challenge'}
+                    <button class="btn-modern join-challenge" data-challenge-id="${challenge.id}" ${challenge.current >= challenge.target ? 'disabled' : ''}>
+                        ${challenge.current >= challenge.target ? 'Completed ✅' : challenge.current > 0 ? 'Continue' : 'Join Challenge'}
                     </button>
                     <button class="btn-secondary share-progress" data-challenge-id="${challenge.id}">
                         Share
@@ -286,11 +305,31 @@ class SocialChallenges {
         const challenge = this.challenges.find(c => c.id === challengeId);
         if (!challenge) return;
 
+        // Check if challenge is already completed
+        if (challenge.current >= challenge.target) {
+            this.showNotification(`✅ Challenge already completed!`, 'info');
+            return;
+        }
+
         // Simulate joining challenge
         challenge.participants += 1;
         
+        // Different increment based on challenge type
+        let increment = 1;
+        if (challengeId === 'calorie-crusher') {
+            increment = 30; // 30 calories for calorie crusher
+        }
+        
+        challenge.current = Math.min(challenge.current + increment, challenge.target); // Limit to target
+        
         // Show success message
-        this.showNotification(`🎉 Joined ${challenge.title}! Good luck!`, 'success');
+        const isCompleted = challenge.current >= challenge.target;
+        if (isCompleted) {
+            this.showNotification(`🏆 Challenge completed! You earned ${challenge.reward} points!`, 'success');
+            this.completeChallenge(challengeId);
+        } else {
+            this.showNotification(`🎉 Progress updated! ${challenge.current}/${challenge.target}`, 'success');
+        }
         
         // Update UI
         this.loadActiveChallenges();
@@ -300,6 +339,18 @@ class SocialChallenges {
         if (!userChallenges.includes(challengeId)) {
             userChallenges.push(challengeId);
             localStorage.setItem('userChallenges', JSON.stringify(userChallenges));
+        }
+
+        // Update user points only if not completed
+        if (!isCompleted) {
+            this.userStats.points = (this.userStats.points || 2156) + 10;
+            localStorage.setItem('userStats', JSON.stringify(this.userStats));
+            
+            // Update stats display
+            const pointsElement = document.querySelector('.stat-value');
+            if (pointsElement) {
+                pointsElement.textContent = this.userStats.points;
+            }
         }
     }
 
@@ -315,13 +366,40 @@ class SocialChallenges {
                 title: 'My Fitness Progress',
                 text: shareText,
                 url: window.location.href
+            }).then(() => {
+                this.showNotification('📤 Progress shared successfully!', 'success');
+            }).catch(() => {
+                this.copyToClipboard(shareText);
             });
         } else {
-            // Fallback: copy to clipboard
-            navigator.clipboard.writeText(shareText).then(() => {
-                this.showNotification('📋 Progress copied to clipboard!', 'info');
-            });
+            this.copyToClipboard(shareText);
         }
+    }
+
+    copyToClipboard(text) {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(() => {
+                this.showNotification('📋 Progress copied to clipboard!', 'info');
+            }).catch(() => {
+                this.fallbackCopyToClipboard(text);
+            });
+        } else {
+            this.fallbackCopyToClipboard(text);
+        }
+    }
+
+    fallbackCopyToClipboard(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            this.showNotification('📋 Progress copied to clipboard!', 'info');
+        } catch (err) {
+            this.showNotification('❌ Could not copy to clipboard', 'error');
+        }
+        document.body.removeChild(textArea);
     }
 
     updateChallengeProgress(challengeId, progress) {
