@@ -70,144 +70,337 @@ def generate_veg_diet(day, gender, calories, bmi_category):
     # Calculate daily calorie summary
     daily_calories = f"Daily Target: {calories} calories"
     
-    # Common vegetarian breakfast options
+    # Calculate week number for consistency
+    import datetime
+    current_week = datetime.datetime.now().isocalendar()[1]
+    week_number = ((current_week - 1) % 4) + 1
+    
+    # Morning hydration (consistent across all days)
+    morning_hydration = {
+        "meal": "Hydration & Detox",
+        "details": "1 Litre Water with Chia Seeds",
+        "time": "7:00 AM",
+        "calories": "20-30 calories"
+    }
+    
+    # Mid-morning snack (consistent across all days)
+    mid_morning_snack = {
+        "meal": "Fiber & Protein",
+        "details": "1 small bowl Sprouts (Moong/Chana), handful Roasted Chana",
+        "time": "11:00 AM",
+        "calories": "150-200 calories"
+    }
+    
+    # Pre-workout meal (consistent across all days)
+    pre_workout = {
+        "meal": "Energy Burst (30-45 min before)",
+        "details": "Oats Meal: 1/2 cup White Oats (cooked with Milk/Water), 1 Banana, 1 tsp Peanut Butter, 4 Almonds, 1 tsp Honey. Hydration: 1 Litre Water + 2 Dates",
+        "time": "4:30 PM",
+        "calories": "350-400 calories"
+    }
+    
+    # Immediate post-workout (consistent across all days)
+    immediate_post_workout = {
+        "meal": "Simple Carbs (Recovery)",
+        "details": "1 glass fresh juice (Pineapple / Avocado / Anaar / Orange)",
+        "time": "6:30 PM",
+        "calories": "100-150 calories"
+    }
+    
+    # Post-workout protein (consistent across all days)
+    post_workout_protein = {
+        "meal": "Muscle Repair",
+        "details": "3 Egg Whites, 1 Whole Egg",
+        "time": "7:00 PM",
+        "calories": "150-200 calories"
+    }
+    
+    # Standardized breakfast (consistent across all days)
     breakfast_options = {
         "Monday": {
-            "meal": "Oatmeal with fruits and nuts",
-            "details": "1 cup oatmeal cooked with water, topped with 1 banana, 1 tbsp honey, and a handful of mixed nuts",
-            "calories": "350-400 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Tuesday": {
-            "meal": "Vegetable Omelet with Toast",
-            "details": "2 egg omelet with spinach, tomatoes, and bell peppers, 1 slice of whole grain toast",
-            "calories": "300-350 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Wednesday": {
-            "meal": "Smoothie Bowl",
-            "details": "Blend 1 frozen banana, 1/2 cup frozen berries, 1/2 cup Greek yogurt, and a splash of almond milk. Top with granola and chia seeds.",
-            "calories": "350-400 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Thursday": {
-            "meal": "Avocado Toast",
-            "details": "2 slices of whole grain bread topped with mashed avocado, cherry tomatoes, and a sprinkle of salt and pepper",
-            "calories": "300-350 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Friday": {
-            "meal": "Vegetable Upma",
-            "details": "1 cup semolina cooked with mixed vegetables (carrots, peas, beans) and spices",
-            "calories": "300-350 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Saturday": {
-            "meal": "Fruit Pancakes",
-            "details": "2 whole grain pancakes topped with mixed berries and a drizzle of maple syrup",
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
             "calories": "400-450 calories"
         },
         "Sunday": {
-            "meal": "Vegetable Poha",
-            "details": "1 cup flattened rice cooked with peas, carrots, and mild spices",
-            "calories": "300-350 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         }
     }
     
-    # Common vegetarian lunch options
+    # Standardized lunch (consistent across all days)
     lunch_options = {
         "Monday": {
-            "meal": "Chickpea Salad",
-            "details": "2 cups mixed greens, 1/2 cup chickpeas, chopped vegetables, olive oil and lemon dressing",
-            "calories": "400-450 calories"
-        },
-        "Tuesday": {
-            "meal": "Vegetable Wrap",
-            "details": "Whole grain wrap filled with hummus, mixed greens, cucumber, carrot, and bell peppers",
-            "calories": "450-500 calories"
-        },
-        "Wednesday": {
-            "meal": "Lentil Soup with Bread",
-            "details": "1 cup lentil soup with vegetables, 1 slice whole grain bread",
-            "calories": "400-450 calories"
-        },
-        "Thursday": {
-            "meal": "Quinoa Bowl",
-            "details": "1 cup cooked quinoa, roasted vegetables (broccoli, sweet potato, bell peppers), tahini dressing",
-            "calories": "500-550 calories"
-        },
-        "Friday": {
-            "meal": "Bean Burrito Bowl",
-            "details": "Brown rice, black beans, corn, tomatoes, avocado, lime juice, and cilantro",
-            "calories": "550-600 calories"
-        },
-        "Saturday": {
-            "meal": "Pasta Primavera",
-            "details": "1 cup whole grain pasta with sautéed seasonal vegetables and tomato sauce",
-            "calories": "500-550 calories"
-        },
-        "Sunday": {
-            "meal": "Vegetable Biryani",
-            "details": "Brown rice cooked with mixed vegetables, spices, and garnished with fresh herbs",
-            "calories": "500-550 calories"
-        }
-    }
-    
-    # Common vegetarian dinner options
-    dinner_options = {
-        "Monday": {
-            "meal": "Vegetable Stir Fry with Tofu",
-            "details": "Tofu cubes stir-fried with mixed vegetables (broccoli, carrots, bell peppers) in soy sauce, served over brown rice",
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
             "calories": "450-500 calories"
         },
         "Tuesday": {
-            "meal": "Stuffed Bell Peppers",
-            "details": "Bell peppers stuffed with quinoa, black beans, corn, and spices, baked with a touch of cheese on top",
-            "calories": "400-450 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Wednesday": {
-            "meal": "Vegetable Curry with Brown Rice",
-            "details": "Mixed vegetable curry cooked in tomato gravy with Indian spices, served with 1/2 cup brown rice",
-            "calories": "500-550 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Thursday": {
-            "meal": "Buddha Bowl",
-            "details": "Brown rice, roasted sweet potatoes, steamed broccoli, avocado slices, and tahini dressing",
-            "calories": "500-550 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Friday": {
-            "meal": "Zucchini Noodles with Pesto",
-            "details": "Spiralized zucchini with homemade basil pesto, cherry tomatoes, and white beans",
-            "calories": "400-450 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Saturday": {
-            "meal": "Bean and Vegetable Soup",
-            "details": "Hearty soup with mixed beans, vegetables, and herbs, served with a small whole grain roll",
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
             "calories": "450-500 calories"
         },
         "Sunday": {
-            "meal": "Spinach and Mushroom Quesadilla",
-            "details": "Whole grain tortilla filled with sautéed spinach, mushrooms, and a small amount of cheese",
-            "calories": "400-450 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         }
     }
     
-    # Snack options
-    snacks = {
-        "Morning": {
-            "meal": "Fruit and Nuts",
-            "details": "1 apple or pear with a small handful of almonds",
-            "calories": "150-200 calories"
-        },
-        "Evening": {
-            "meal": "Yogurt Parfait",
-            "details": "Greek yogurt topped with berries and a sprinkle of granola",
-            "calories": "200-250 calories"
+    # Vegetarian dinner options with weekly focus (adapted for vegetarian preferences)
+    if week_number == 1:  # Week 1 - Paneer Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            },
+            "Tuesday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            },
+            "Wednesday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            },
+            "Thursday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            },
+            "Friday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            },
+            "Saturday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            },
+            "Sunday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "time": "9:00 PM",
+                "calories": "500-550 calories"
+            }
         }
-    }
+    elif week_number == 2:  # Week 2 - Tofu/Soy Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Tuesday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Wednesday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Thursday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Friday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Saturday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Sunday": {
+                "meal": "Tofu/Soy Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Tofu Curry/Stir-fry",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            }
+        }
+    elif week_number == 3:  # Week 3 - Mixed Bean Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Tuesday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Wednesday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Thursday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Friday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Saturday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            },
+            "Sunday": {
+                "meal": "Mixed Bean Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Bean Curry (Rajma/Chana/Black Beans)",
+                "time": "9:00 PM",
+                "calories": "450-500 calories"
+            }
+        }
+    else:  # Week 4 - Lentil/Dal Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            },
+            "Tuesday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            },
+            "Wednesday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            },
+            "Thursday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            },
+            "Friday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            },
+            "Saturday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            },
+            "Sunday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "time": "9:00 PM",
+                "calories": "400-450 calories"
+            }
+        }
     
-    # Return the diet plan for the day
+    # Return the complete diet plan for the day
     return {
+        "morning_hydration": morning_hydration,
         "breakfast": breakfast_options[day],
+        "mid_morning_snack": mid_morning_snack,
         "lunch": lunch_options[day],
+        "pre_workout": pre_workout,
+        "immediate_post_workout": immediate_post_workout,
+        "post_workout_protein": post_workout_protein,
         "dinner": dinner_options[day],
-        "snacks": snacks,
-        "daily_calories": daily_calories
+        "daily_calories": daily_calories,
+        "week_focus": f"Week {week_number} - {['Paneer', 'Tofu/Soy', 'Mixed Bean', 'Lentil/Dal'][week_number-1]} Focus"
     }
 
 def generate_non_veg_diet(day, gender, calories, bmi_category):
@@ -216,144 +409,327 @@ def generate_non_veg_diet(day, gender, calories, bmi_category):
     # Calculate daily calorie summary
     daily_calories = f"Daily Target: {calories} calories"
     
-    # Common non-vegetarian breakfast options
+    # Morning hydration (consistent across all days)
+    morning_hydration = {
+        "meal": "Hydration & Detox",
+        "details": "1 Litre Water with Chia Seeds",
+        "time": "7:00 AM",
+        "calories": "20-30 calories"
+    }
+    
+    # Standardized breakfast (consistent across all days)
     breakfast_options = {
         "Monday": {
-            "meal": "Scrambled Eggs with Toast",
-            "details": "2 scrambled eggs with spinach and tomatoes, 1 slice of whole grain toast",
-            "calories": "350-400 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Tuesday": {
-            "meal": "Greek Yogurt with Fruits and Granola",
-            "details": "1 cup Greek yogurt, 1/2 cup mixed berries, 2 tbsp granola, and a drizzle of honey",
-            "calories": "300-350 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Wednesday": {
-            "meal": "Smoked Salmon Bagel",
-            "details": "Whole grain bagel with cream cheese, smoked salmon, cucumber, and dill",
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
             "calories": "400-450 calories"
         },
         "Thursday": {
-            "meal": "Protein Smoothie",
-            "details": "Blend 1 scoop protein powder, 1 banana, 1 cup milk, and 1 tbsp peanut butter",
-            "calories": "350-400 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Friday": {
-            "meal": "Breakfast Burrito",
-            "details": "Whole grain wrap filled with scrambled eggs, black beans, cheese, and salsa",
-            "calories": "450-500 calories"
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
+            "calories": "400-450 calories"
         },
         "Saturday": {
-            "meal": "Chicken and Vegetable Omelette",
-            "details": "3-egg omelette with diced chicken breast, bell peppers, and spinach",
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
             "calories": "400-450 calories"
         },
         "Sunday": {
-            "meal": "Protein Pancakes",
-            "details": "Protein-enriched pancakes topped with fresh berries and a dollop of Greek yogurt",
+            "meal": "Complex Carbs & Protein",
+            "details": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs",
+            "time": "8:30 AM",
             "calories": "400-450 calories"
         }
     }
     
-    # Common non-vegetarian lunch options
+    # Mid-morning snack (consistent across all days)
+    mid_morning_snack = {
+        "meal": "Fiber & Protein",
+        "details": "1 small bowl Sprouts (Moong/Chana), handful Roasted Chana",
+        "time": "11:00 AM",
+        "calories": "150-200 calories"
+    }
+    
+    # Standardized lunch (consistent across all days)
     lunch_options = {
         "Monday": {
-            "meal": "Grilled Chicken Salad",
-            "details": "Mixed greens, grilled chicken breast, cherry tomatoes, cucumber, red onion, balsamic vinaigrette",
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
             "calories": "450-500 calories"
         },
         "Tuesday": {
-            "meal": "Tuna Sandwich",
-            "details": "Whole grain bread, tuna mixed with light mayo, celery, and lettuce",
-            "calories": "400-450 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Wednesday": {
-            "meal": "Turkey and Avocado Wrap",
-            "details": "Whole grain wrap with sliced turkey, avocado, lettuce, and mustard",
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
             "calories": "450-500 calories"
         },
         "Thursday": {
-            "meal": "Chicken and Quinoa Bowl",
-            "details": "Quinoa topped with grilled chicken, roasted vegetables, and a light tahini dressing",
-            "calories": "500-550 calories"
-        },
-        "Friday": {
-            "meal": "Salmon with Steamed Vegetables",
-            "details": "Baked salmon fillet with steamed broccoli, carrots, and cauliflower",
-            "calories": "450-500 calories"
-        },
-        "Saturday": {
-            "meal": "Chicken Soup with Whole Grain Bread",
-            "details": "Chicken soup with vegetables and a slice of whole grain bread on the side",
-            "calories": "400-450 calories"
-        },
-        "Sunday": {
-            "meal": "Lean Beef Stir Fry",
-            "details": "Stir-fried lean beef strips with bell peppers, broccoli, and brown rice",
-            "calories": "550-600 calories"
-        }
-    }
-    
-    # Common non-vegetarian dinner options
-    dinner_options = {
-        "Monday": {
-            "meal": "Baked Fish with Roasted Vegetables",
-            "details": "Baked white fish with lemon and herbs, served with roasted Brussels sprouts and carrots",
-            "calories": "400-450 calories"
-        },
-        "Tuesday": {
-            "meal": "Chicken Stir Fry",
-            "details": "Chicken breast stir-fried with mixed vegetables (broccoli, snap peas, carrots) in a light sauce, served over brown rice",
-            "calories": "500-550 calories"
-        },
-        "Wednesday": {
-            "meal": "Grilled Salmon with Quinoa",
-            "details": "Grilled salmon fillet with lemon and dill, served with quinoa and steamed asparagus",
-            "calories": "500-550 calories"
-        },
-        "Thursday": {
-            "meal": "Turkey Meatballs with Zucchini Noodles",
-            "details": "Lean turkey meatballs in tomato sauce, served over spiralized zucchini",
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
             "calories": "450-500 calories"
         },
         "Friday": {
-            "meal": "Shrimp and Vegetable Skewers",
-            "details": "Grilled shrimp and vegetable skewers with a side of cauliflower rice",
-            "calories": "400-450 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Saturday": {
-            "meal": "Lean Beef and Vegetable Stew",
-            "details": "Slow-cooked beef and vegetable stew with a small whole grain roll",
-            "calories": "500-550 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         },
         "Sunday": {
-            "meal": "Roast Chicken with Sweet Potatoes",
-            "details": "Roasted chicken breast with herbs, served with baked sweet potato and steamed green beans",
-            "calories": "500-550 calories"
+            "meal": "Satiety & Veggies",
+            "details": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites",
+            "time": "1:30 PM",
+            "calories": "450-500 calories"
         }
     }
     
-    # Snack options
-    snacks = {
-        "Morning": {
-            "meal": "Protein Bar",
-            "details": "One protein bar (look for options with at least 10g protein and under 200 calories)",
-            "calories": "150-200 calories"
-        },
-        "Evening": {
-            "meal": "Beef Jerky and Apple",
-            "details": "1 oz beef jerky and a medium apple",
-            "calories": "200-250 calories"
-        }
+    # Pre-workout meal (consistent across all days)
+    pre_workout = {
+        "meal": "Energy Burst (30-45 min before)",
+        "details": "Oats Meal: 1/2 cup White Oats (cooked with Milk/Water), 1 Banana, 1 tsp Peanut Butter, 4 Almonds, 1 tsp Honey. Hydration: 1 Litre Water + 2 Dates",
+        "time": "4:30 PM",
+        "calories": "350-400 calories"
     }
     
-    # Return the diet plan for the day
+    # Immediate post-workout (consistent across all days)
+    immediate_post_workout = {
+        "meal": "Simple Carbs (Recovery)",
+        "details": "1 glass fresh juice (Pineapple / Avocado / Anaar / Orange)",
+        "time": "6:30 PM",
+        "calories": "100-150 calories"
+    }
+    
+    # Post-workout protein (consistent across all days)
+    post_workout_protein = {
+        "meal": "Muscle Repair",
+        "details": "3 Egg Whites, 1 Whole Egg",
+        "time": "7:00 PM",
+        "calories": "150-200 calories"
+    }
+    
+    # Calculate week number based on a rotating 4-week cycle
+    import datetime
+    current_week = datetime.datetime.now().isocalendar()[1]
+    week_number = ((current_week - 1) % 4) + 1  # Cycles through weeks 1-4
+    
+    # Base dinner structure for all days
+    dinner_base = {
+        "meal": "2 Roti/Whole Wheat Bread + Protein Focus",
+        "calories": "500-600 calories"
+    }
+    
+    # Week-specific protein focus
+    if week_number == 1:  # Week 1 - Chicken Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            },
+            "Tuesday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            },
+            "Wednesday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            },
+            "Thursday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            },
+            "Friday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            },
+            "Saturday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            },
+            "Sunday": {
+                "meal": "Chicken Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Chicken Curry/Stew",
+                "calories": "550-600 calories"
+            }
+        }
+    elif week_number == 2:  # Week 2 - Paneer Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            },
+            "Tuesday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            },
+            "Wednesday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            },
+            "Thursday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            },
+            "Friday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            },
+            "Saturday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            },
+            "Sunday": {
+                "meal": "Paneer Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 250g Paneer Bhurji/Sabji",
+                "calories": "500-550 calories"
+            }
+        }
+    elif week_number == 3:  # Week 3 - Fish Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            },
+            "Tuesday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            },
+            "Wednesday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            },
+            "Thursday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            },
+            "Friday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            },
+            "Saturday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            },
+            "Sunday": {
+                "meal": "Fish Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Fish Curry/Grilled",
+                "calories": "500-550 calories"
+            }
+        }
+    else:  # Week 4 - Mutton/Red Meat or Lentil Focus
+        dinner_options = {
+            "Monday": {
+                "meal": "Mutton/Red Meat Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Mutton Curry/Stew (Only 1-2 times this week) OR Lentil/Dal Focus",
+                "calories": "550-600 calories"
+            },
+            "Tuesday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "calories": "450-500 calories"
+            },
+            "Wednesday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "calories": "450-500 calories"
+            },
+            "Thursday": {
+                "meal": "Mutton/Red Meat Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, 200g Mutton Curry/Stew (Only 1-2 times this week) OR Lentil/Dal Focus",
+                "calories": "550-600 calories"
+            },
+            "Friday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "calories": "450-500 calories"
+            },
+            "Saturday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "calories": "450-500 calories"
+            },
+            "Sunday": {
+                "meal": "Lentil/Dal Focus Dinner",
+                "details": "2 Roti/Whole Wheat Bread, Mixed Dal with vegetables",
+                "calories": "450-500 calories"
+            }
+        }
+    
+    # Add complete meal schedule for context
+    meal_schedule = {
+        "Morning (7:00 AM)": "1 Litre Water with Chia Seeds - Hydration & Detox",
+        "Breakfast (8:30 AM)": "2 Roti/Whole Wheat Bread, 1 bowl Veg Curry (Seasonal), 2 Boiled Eggs - Complex Carbs & Protein",
+        "Mid-Morning Snack (11:00 AM)": "1 small bowl Sprouts (Moong/Chana), handful Roasted Chana - Fiber & Protein",
+        "Lunch (1:30 PM)": "1 medium bowl Brown/White Rice, 1 bowl Leafy Vegetable Curry (Dal), 2 Egg Whites - Satiety & Veggies",
+        "Pre-Workout (4:30 PM)": "Oats Meal: 1/2 cup White Oats (cooked with Milk/Water), 1 Banana, 1 tsp Peanut Butter, 4 Almonds, 1 tsp Honey. Hydration: 1 Litre Water + 2 Dates - Energy Burst (30-45 min before)",
+        "Immediate Post-Workout (6:30 PM)": "1 glass fresh juice (Pineapple / Avocado / Anaar / Orange) - Simple Carbs (Recovery)",
+        "Post-Workout Protein (7:00 PM)": "3 Egg Whites, 1 Whole Egg - Muscle Repair",
+        "Dinner (9:00 PM)": "Protein & Fiber focus as per weekly rotation"
+    }
+    
+    # Return the complete diet plan for the day
     return {
+        "morning_hydration": morning_hydration,
         "breakfast": breakfast_options[day],
+        "mid_morning_snack": mid_morning_snack,
         "lunch": lunch_options[day],
+        "pre_workout": pre_workout,
+        "immediate_post_workout": immediate_post_workout,
+        "post_workout_protein": post_workout_protein,
         "dinner": dinner_options[day],
-        "snacks": snacks,
-        "daily_calories": daily_calories
+        "daily_calories": daily_calories,
+        "week_focus": f"Week {week_number} - {['Chicken', 'Paneer', 'Fish', 'Mutton/Lentil'][week_number-1]} Focus"
     }
 
 def generate_workout_plan(gender, intensity):
