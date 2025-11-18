@@ -20,10 +20,10 @@
 <!-- Features Section -->
 <section class="features-section">
     <div class="container">
-        <h2 class="text-center section-title features-heading" style="color: white !important; font-weight: 600 !important;">Why Choose The Web Workout?</h2>
+        <h2 class="text-center section-title features-heading" style="color: white !important; font-weight: 600 !important;">Why Choose SmartFit?</h2>
         <div class="row mt-5">
             <div class="col-lg-4 col-md-6">
-                <div class="feature-box fade-in" style="background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url({{ 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}) no-repeat center center; background-size: cover;">
+                <div class="feature-box fade-in">
                     <div class="feature-icon">
                         <i class="fas fa-utensils"></i>
                     </div>
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="feature-box fade-in" style="background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url({{ 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}) no-repeat center center; background-size: cover;">
+                <div class="feature-box fade-in">
                     <div class="feature-icon">
                         <i class="fas fa-dumbbell"></i>
                     </div>
@@ -41,7 +41,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="feature-box fade-in" style="background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url({{ 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}) no-repeat center center; background-size: cover;">
+                <div class="feature-box fade-in">
                     <div class="feature-icon">
                         <i class="fas fa-weight"></i>
                     </div>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="feature-box fade-in" style="background: linear-gradient(rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), url({{ 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}) no-repeat center center; background-size: cover;">
+                <div class="feature-box fade-in">
                     <div class="feature-icon">
                         <i class="fas fa-carrot"></i>
                     </div>
@@ -171,7 +171,7 @@
 </section>
 
 <!-- Quick BMI Calculator -->
-<section class="bmi-section bg-light">
+<section class="bmi-section">
     <div class="container">
         <h2 class="text-center section-title">Quick BMI Calculator</h2>
         <div class="row justify-content-center mt-5">
@@ -205,7 +205,7 @@
 </section>
 
 <!-- Success Stories Section -->
-<section class="bmi-section bg-light">
+<section class="success-stories-section">
     <div class="container">
         <h2 class="text-center section-title">Success Stories</h2>
         <div class="row justify-content-center mt-5">
@@ -273,8 +273,10 @@
             const height = parseFloat(document.getElementById('height-bmi').value);
             const weight = parseFloat(document.getElementById('weight-bmi').value);
             
-            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0) {
-                alert('Please enter valid height and weight values');
+            if (isNaN(height) || isNaN(weight) || height <= 0 || weight <= 0 || height < 120 || height > 220 || weight < 30 || weight > 200) {
+                document.getElementById('bmi-result').innerHTML = '<h4 style="color: #dc3545;">Invalid Input</h4><p style="color: #dc3545;">Please enter valid height (120-220 cm) and weight (30-200 kg)</p>';
+                document.getElementById('bmi-result').style.display = 'block';
+                document.getElementById('bmi-result').className = 'mt-4 p-3 rounded text-center';
                 return;
             }
             

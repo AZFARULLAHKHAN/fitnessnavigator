@@ -126,15 +126,62 @@ def contact():
 
 @app.route('/submit_contact', methods=['POST'])
 def submit_contact():
-    name = request.form.get('name')
-    email = request.form.get('email')
-    message = request.form.get('message')
+    try:
+        name = request.form.get('name')
+        email = request.form.get('email')
+        subject = request.form.get('subject')
+        message = request.form.get('message')
 
-    # Log the contact submission
-    logging.debug(f"Contact form submission - Name: {name}, Email: {email}, Message: {message}")
-
-    flash('Thank you for your message! We will get back to you soon.', 'success')
-    return redirect(url_for('index'))
+        # Send email
+        import smtplib
+        from email.mime.text import MIMEText
+        from email.mime.multipart import MIMEMultipart
+        
+        # Email configuration
+        smtp_server = "smtp.gmail.com"
+        smtp_port = 587
+        sender_email = "azfarkhanworkspace@gmail.com"
+        sender_password = os.environ.get('EMAIL_PASSWORD', '')
+        
+        # Create message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = "azfarkhanworkspace@gmail.com"
+        msg['Subject'] = f"Contact Form: {subject}"
+        
+        body = f"""
+        New contact form submission:
+        
+        Name: {name}
+        Email: {email}
+        Subject: {subject}
+        
+        Message:
+        {message}
+        """
+        
+        msg.attach(MIMEText(body, 'plain'))
+        
+        # Send email (only if password is configured)
+        if sender_password:
+            try:
+                server = smtplib.SMTP(smtp_server, smtp_port)
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.send_message(msg)
+                server.quit()
+                logging.info(f"Email sent successfully for contact form from {email}")
+            except Exception as e:
+                logging.error(f"Failed to send email: {e}")
+        
+        # Log the contact submission
+        logging.info(f"Contact form submission - Name: {name}, Email: {email}, Subject: {subject}")
+        
+        return jsonify({'success': True, 'message': 'Message sent successfully!'})
+        
+    except Exception as e:
+        logging.error(f"Contact form error: {e}")
+        return jsonify({'success': False, 'message': 'Failed to send message. Please try again.'}), 500
 
 @app.route('/generate_plan', methods=['POST'])
 def generate_plan():
