@@ -7,64 +7,121 @@ from io import BytesIO
 import datetime
 
 def generate_grocery_list(diet_plan, user_data):
-    """Generate grocery list from diet plan"""
+    """Generate enhanced grocery list from diet plan with better categorization"""
     grocery_items = {
-        'Proteins': {},
-        'Vegetables': {},
-        'Fruits': {},
-        'Grains': {},
-        'Dairy': {},
-        'Others': {}
+        '🥩 Proteins': {},
+        '🥬 Vegetables': {},
+        '🍎 Fruits': {},
+        '🌾 Grains & Cereals': {},
+        '🥛 Dairy & Alternatives': {},
+        '🥜 Nuts & Seeds': {},
+        '🧂 Condiments & Spices': {},
+        '🥤 Beverages': {},
+        '🍯 Others': {}
     }
+    
+    # Track ingredients to avoid duplicates
+    ingredient_count = {}
     
     # Extract ingredients from diet plan
     for day, meals in diet_plan.items():
         for meal_type, meal_info in meals.items():
             if isinstance(meal_info, dict) and 'meal' in meal_info:
                 meal_text = meal_info['meal'].lower()
+                details = meal_info.get('details', '').lower()
+                full_text = f"{meal_text} {details}"
             else:
-                meal_text = str(meal_info).lower()
+                full_text = str(meal_info).lower()
             
-            # Categorize ingredients
-            if any(word in meal_text for word in ['chicken', 'fish', 'egg', 'tofu', 'beef', 'turkey', 'salmon']):
-                if 'chicken' in meal_text: grocery_items['Proteins']['Chicken breast'] = '1 kg'
-                if 'fish' in meal_text or 'salmon' in meal_text: grocery_items['Proteins']['Fish fillets'] = '800g'
-                if 'egg' in meal_text: grocery_items['Proteins']['Eggs'] = '12 pieces'
-                if 'tofu' in meal_text: grocery_items['Proteins']['Tofu'] = '400g'
-                if 'beef' in meal_text: grocery_items['Proteins']['Lean beef'] = '600g'
-                if 'turkey' in meal_text: grocery_items['Proteins']['Turkey'] = '500g'
+            # Enhanced protein categorization
+            if any(word in full_text for word in ['chicken', 'fish', 'egg', 'tofu', 'beef', 'turkey', 'salmon', 'tuna', 'shrimp', 'beans', 'lentils']):
+                if 'chicken' in full_text: grocery_items['🥩 Proteins']['Chicken breast (boneless)'] = '1.2 kg'
+                if any(word in full_text for word in ['fish', 'salmon']): grocery_items['🥩 Proteins']['Fresh fish fillets'] = '800g'
+                if 'egg' in full_text: grocery_items['🥩 Proteins']['Fresh eggs (large)'] = '18 pieces'
+                if 'tofu' in full_text: grocery_items['🥩 Proteins']['Firm tofu'] = '600g'
+                if 'beef' in full_text: grocery_items['🥩 Proteins']['Lean ground beef'] = '700g'
+                if 'turkey' in full_text: grocery_items['🥩 Proteins']['Turkey breast'] = '600g'
+                if 'tuna' in full_text: grocery_items['🥩 Proteins']['Canned tuna (in water)'] = '4 cans'
+                if 'shrimp' in full_text: grocery_items['🥩 Proteins']['Fresh shrimp'] = '500g'
+                if any(word in full_text for word in ['beans', 'chickpea', 'lentil']): 
+                    grocery_items['🥩 Proteins']['Mixed dried beans'] = '500g'
+                    grocery_items['🥩 Proteins']['Red lentils'] = '400g'
             
-            if any(word in meal_text for word in ['spinach', 'broccoli', 'carrot', 'bell pepper', 'tomato', 'cucumber']):
-                grocery_items['Vegetables']['Mixed vegetables'] = '2 kg'
-                grocery_items['Vegetables']['Leafy greens'] = '500g'
-                grocery_items['Vegetables']['Tomatoes'] = '1 kg'
-                grocery_items['Vegetables']['Onions'] = '500g'
+            # Enhanced vegetable categorization
+            vegetables_found = []
+            if 'spinach' in full_text: vegetables_found.append('Fresh spinach')
+            if 'broccoli' in full_text: vegetables_found.append('Fresh broccoli')
+            if 'carrot' in full_text: vegetables_found.append('Carrots')
+            if any(word in full_text for word in ['bell pepper', 'pepper']): vegetables_found.append('Bell peppers (mixed colors)')
+            if 'tomato' in full_text: vegetables_found.append('Fresh tomatoes')
+            if 'cucumber' in full_text: vegetables_found.append('Cucumbers')
+            if 'onion' in full_text: vegetables_found.append('Yellow onions')
+            if 'garlic' in full_text: vegetables_found.append('Fresh garlic')
+            if 'lettuce' in full_text: vegetables_found.append('Mixed lettuce')
+            if 'avocado' in full_text: vegetables_found.append('Ripe avocados')
+            if 'sweet potato' in full_text: vegetables_found.append('Sweet potatoes')
             
-            if any(word in meal_text for word in ['apple', 'banana', 'berries', 'orange', 'fruit']):
-                grocery_items['Fruits']['Bananas'] = '1 dozen'
-                grocery_items['Fruits']['Apples'] = '1 kg'
-                grocery_items['Fruits']['Mixed berries'] = '500g'
-                grocery_items['Fruits']['Oranges'] = '6 pieces'
+            if vegetables_found:
+                grocery_items['🥬 Vegetables']['Fresh spinach'] = '300g'
+                grocery_items['🥬 Vegetables']['Broccoli crowns'] = '2 pieces'
+                grocery_items['🥬 Vegetables']['Carrots'] = '1 kg'
+                grocery_items['🥬 Vegetables']['Bell peppers (assorted)'] = '6 pieces'
+                grocery_items['🥬 Vegetables']['Fresh tomatoes'] = '1.5 kg'
+                grocery_items['🥬 Vegetables']['Cucumbers'] = '4 pieces'
+                grocery_items['🥬 Vegetables']['Yellow onions'] = '1 kg'
+                grocery_items['🥬 Vegetables']['Fresh garlic'] = '2 bulbs'
+                grocery_items['🥬 Vegetables']['Mixed salad greens'] = '500g'
             
-            if any(word in meal_text for word in ['rice', 'oats', 'bread', 'quinoa', 'pasta']):
-                grocery_items['Grains']['Brown rice'] = '1 kg'
-                grocery_items['Grains']['Oats'] = '500g'
-                grocery_items['Grains']['Whole grain bread'] = '2 loaves'
-                if 'quinoa' in meal_text: grocery_items['Grains']['Quinoa'] = '500g'
-                if 'pasta' in meal_text: grocery_items['Grains']['Whole grain pasta'] = '500g'
+            # Enhanced fruit categorization
+            if any(word in full_text for word in ['apple', 'banana', 'berries', 'orange', 'fruit', 'lemon']):
+                grocery_items['🍎 Fruits']['Bananas'] = '2 bunches'
+                grocery_items['🍎 Fruits']['Apples (mixed varieties)'] = '1.5 kg'
+                grocery_items['🍎 Fruits']['Mixed berries (fresh/frozen)'] = '750g'
+                grocery_items['🍎 Fruits']['Oranges'] = '8 pieces'
+                grocery_items['🍎 Fruits']['Lemons'] = '4 pieces'
             
-            if any(word in meal_text for word in ['milk', 'yogurt', 'cheese']):
-                grocery_items['Dairy']['Greek yogurt'] = '1 kg'
-                grocery_items['Dairy']['Milk'] = '2 liters'
-                if 'cheese' in meal_text: grocery_items['Dairy']['Cheese'] = '200g'
+            # Enhanced grains categorization
+            if any(word in full_text for word in ['rice', 'oats', 'bread', 'quinoa', 'pasta']):
+                grocery_items['🌾 Grains & Cereals']['Brown rice'] = '1.5 kg'
+                grocery_items['🌾 Grains & Cereals']['Steel-cut oats'] = '750g'
+                grocery_items['🌾 Grains & Cereals']['Whole grain bread'] = '2 loaves'
+                if 'quinoa' in full_text: grocery_items['🌾 Grains & Cereals']['Organic quinoa'] = '600g'
+                if 'pasta' in full_text: grocery_items['🌾 Grains & Cereals']['Whole wheat pasta'] = '750g'
             
-            if any(word in meal_text for word in ['nuts', 'oil', 'honey', 'spices']):
-                grocery_items['Others']['Mixed nuts'] = '300g'
-                grocery_items['Others']['Olive oil'] = '500ml'
-                grocery_items['Others']['Honey'] = '250g'
-                grocery_items['Others']['Spices & herbs'] = 'As needed'
+            # Enhanced dairy categorization
+            if any(word in full_text for word in ['milk', 'yogurt', 'cheese']):
+                grocery_items['🥛 Dairy & Alternatives']['Greek yogurt (plain)'] = '1.5 kg'
+                grocery_items['🥛 Dairy & Alternatives']['Low-fat milk'] = '2 liters'
+                if 'cheese' in full_text: grocery_items['🥛 Dairy & Alternatives']['Mozzarella cheese'] = '300g'
+                if 'almond' in full_text: grocery_items['🥛 Dairy & Alternatives']['Almond milk'] = '1 liter'
+            
+            # Nuts and seeds
+            if any(word in full_text for word in ['nuts', 'almond', 'walnut', 'seeds']):
+                grocery_items['🥜 Nuts & Seeds']['Mixed nuts (unsalted)'] = '400g'
+                grocery_items['🥜 Nuts & Seeds']['Chia seeds'] = '200g'
+                grocery_items['🥜 Nuts & Seeds']['Pumpkin seeds'] = '150g'
+            
+            # Condiments and spices
+            if any(word in full_text for word in ['oil', 'vinegar', 'spices', 'salt', 'pepper']):
+                grocery_items['🧂 Condiments & Spices']['Extra virgin olive oil'] = '750ml'
+                grocery_items['🧂 Condiments & Spices']['Balsamic vinegar'] = '250ml'
+                grocery_items['🧂 Condiments & Spices']['Sea salt'] = '1 container'
+                grocery_items['🧂 Condiments & Spices']['Black pepper (ground)'] = '1 container'
+                grocery_items['🧂 Condiments & Spices']['Mixed herbs & spices'] = 'As needed'
+            
+            # Beverages
+            if any(word in full_text for word in ['water', 'tea', 'coffee']):
+                grocery_items['🥤 Beverages']['Filtered water'] = '6 liters'
+                grocery_items['🥤 Beverages']['Green tea bags'] = '1 box'
+            
+            # Others
+            if any(word in full_text for word in ['honey', 'maple']):
+                grocery_items['🍯 Others']['Raw honey'] = '350g'
+                if 'maple' in full_text: grocery_items['🍯 Others']['Pure maple syrup'] = '250ml'
     
-    return grocery_items
+    # Remove empty categories
+    return {k: v for k, v in grocery_items.items() if v}
+
 
 def create_diet_pdf(user_data, diet_plan):
     """Create PDF for diet plan"""
