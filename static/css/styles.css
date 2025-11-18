@@ -31,6 +31,37 @@ html {
   /* Header */
   .navbar-brand {
     font-weight: 700;
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, #00c6ff, #0072ff, #8e2de2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: none;
+    transition: all 0.3s ease;
+  }
+  
+  .navbar-brand:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 4px 8px rgba(0,198,255,0.4));
+  }
+  
+  .navbar-brand .brand-text {
+    font-weight: 900;
+    letter-spacing: -1px;
+    font-family: 'Roboto', sans-serif;
+    text-transform: uppercase;
+  }
+  
+  .navbar-brand i {
+    color: #00c6ff;
+    font-size: 2.2rem;
+    text-shadow: 0 3px 6px rgba(0,198,255,0.5);
+    margin-right: 0.5rem;
+  }
+  
+  .navbar-nav .nav-link {
+    font-size: 1.1rem;
+    font-weight: 500;
   }
   
   /* Hero section */
@@ -86,20 +117,22 @@ html {
     text-align: center;
     margin-bottom: 30px;
     padding: 30px 20px;
-    background-color: var(--bs-light);
-    border-radius: 10px;
-    transition: transform 0.3s, box-shadow 0.3s;
-    color: #212529;
+    background-color: #1f2a33;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.03);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #ffffff;
+    overflow: hidden;
   }
   
   .feature-box:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 10px 20px rgba(242, 241, 241, 0.1);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
   }
   
   .feature-box h3,
   .feature-box p {
-    color: #212529;
+    color: #ffffff !important;
   }
   
   .feature-icon {
@@ -247,15 +280,31 @@ html {
     border-left: 4px solid var(--bs-primary);
   }
   
+
+  
   /* BMI Result Styles */
   .bmi-result {
-      padding: 20px;
+      padding: 25px;
       border-radius: 15px;
-      margin-bottom: 30px;
-      background-color: rgba(255, 255, 255, 0.98) !important;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      margin-top: 20px;
+      background-color: #1f2a33 !important;
+      color: #ffffff !important;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      border: 1px solid rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+  }
+  
+  #bmi-result h4,
+  #bmi-result p {
+      color: #ffffff !important;
+      margin-bottom: 10px;
+  }
+  
+  #bmi-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #00c6ff !important;
   }
   
   .bmi-result:hover {
@@ -276,8 +325,15 @@ html {
   
   /* BMI Category Colors */
   .bmi-normal {
-      background-color: rgba(40, 167, 69, 0.1);
-      border: 1px solid rgba(40, 167, 69, 0.2);
+      background-color: #28a745 !important;
+      border: 1px solid rgba(40, 167, 69, 0.8) !important;
+      color: #ffffff !important;
+  }
+  
+  .bmi-normal h4,
+  .bmi-normal p,
+  .bmi-normal #bmi-value {
+      color: #ffffff !important;
   }
   
   .bmi-underweight {
@@ -791,10 +847,13 @@ html {
   }
   
   .bmi-section,
-  .bmi-section h2,
-  .bmi-section label,
-  .bmi-section p {
+  .success-stories-section {
       color: #212529 !important;
+  }
+  
+  .bmi-section .section-title,
+  .success-stories-section .section-title {
+      color: #ffffff !important;
   }
   
   /* Text Color Overrides */
@@ -919,57 +978,59 @@ html {
   
   /* Professional 3D Form Styling */
   .form-card {
-      background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)) !important;
+      background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9)) !important;
       backdrop-filter: blur(20px) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.2) !important;
-      border-radius: 20px !important;
+      border: 1px solid rgba(255,255,255,0.3) !important;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+      border-radius: 25px !important;
       position: relative;
       overflow: hidden;
   }
   
   .form-control {
-      background: rgba(255,255,255,0.1) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
-      border-radius: 12px !important;
-      color: #333 !important;
-      padding: 15px 20px !important;
+      background: rgba(255,255,255,0.8) !important;
+      border: 2px solid rgba(0,198,255,0.3) !important;
+      border-radius: 15px !important;
+      color: #2c3e50 !important;
+      padding: 18px 24px !important;
       font-size: 16px !important;
+      font-weight: 500 !important;
       transition: all 0.3s ease !important;
       backdrop-filter: blur(10px) !important;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05) !important;
   }
   
   .form-control:focus {
       transform: translateY(-3px) scale(1.02) !important;
-      box-shadow: 0 10px 25px rgba(0,123,255,0.3), inset 0 2px 4px rgba(0,0,0,0.1) !important;
-      border-color: rgba(0,123,255,0.5) !important;
-      background: rgba(255,255,255,0.15) !important;
+      box-shadow: 0 15px 35px rgba(0,198,255,0.4), inset 0 2px 8px rgba(0,0,0,0.05) !important;
+      border-color: rgba(0,198,255,0.8) !important;
+      background: rgba(255,255,255,0.95) !important;
       outline: none !important;
   }
   
   .form-select {
-      background: rgba(255,255,255,0.1) !important;
-      border: 1px solid rgba(255,255,255,0.2) !important;
-      border-radius: 12px !important;
-      color: #333 !important;
-      padding: 15px 20px !important;
+      background: rgba(255,255,255,0.8) !important;
+      border: 2px solid rgba(0,198,255,0.3) !important;
+      border-radius: 15px !important;
+      color: #2c3e50 !important;
+      padding: 18px 24px !important;
       font-size: 16px !important;
+      font-weight: 500 !important;
       transition: all 0.3s ease !important;
       backdrop-filter: blur(10px) !important;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.1) !important;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.05) !important;
   }
   
   .form-select:focus {
       transform: translateY(-3px) scale(1.02) !important;
-      box-shadow: 0 10px 25px rgba(0,123,255,0.3) !important;
-      border-color: rgba(0,123,255,0.5) !important;
-      background: rgba(255,255,255,0.15) !important;
+      box-shadow: 0 15px 35px rgba(0,198,255,0.4) !important;
+      border-color: rgba(0,198,255,0.8) !important;
+      background: rgba(255,255,255,0.95) !important;
       outline: none !important;
   }
   
   .form-section {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 50%, #8e2de2 100%) !important;
       position: relative;
       overflow: hidden;
   }
@@ -1177,6 +1238,26 @@ html {
   
   .notification:nth-of-type(3), .toast:nth-of-type(3) {
       top: 10rem !important;
+  }
+  
+  /* FAQ Section Title Styling */
+  .faq-section .section-title {
+      color: white !important;
+  }
+  
+  /* Contact Page FAQ Teaser Section Title */
+  .faq-teaser .section-title {
+      color: white !important;
+  }
+  
+  /* FAQ Page CTA Section Dark Background */
+  .cta-section.bg-light {
+      background-color: #2c3e50 !important;
+  }
+  
+  .cta-section.bg-light h2,
+  .cta-section.bg-light p {
+      color: white !important;
   }
   
   /* End of file */

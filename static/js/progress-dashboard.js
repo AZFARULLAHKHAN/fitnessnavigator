@@ -51,7 +51,7 @@ class ProgressDashboard {
                         <div class="stat-icon">🎯</div>
                         <div class="stat-value" id="goal-progress">0</div>
                         <div class="stat-label">Goal Progress</div>
-                        <div class="stat-change positive">73% complete</div>
+                        <div class="stat-change positive">75% complete</div>
                     </div>
                 </div>
 
@@ -168,7 +168,7 @@ class ProgressDashboard {
             { id: 'calories-burned', target: 2847, suffix: '' },
             { id: 'workouts-completed', target: 12, suffix: '' },
             { id: 'weight-change', target: -2.3, suffix: '' },
-            { id: 'goal-progress', target: 73, suffix: '%' }
+            { id: 'goal-progress', target: 75, suffix: '%' }
         ];
 
         counters.forEach(counter => {

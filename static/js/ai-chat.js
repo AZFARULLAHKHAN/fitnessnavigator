@@ -101,49 +101,157 @@ class AIChat {
     }
 
     gatherPageContext() {
-        // Gather user data
-        const userDataElements = document.querySelectorAll('.list-group-item');
+        // Detect current page
+        const currentPage = window.location.pathname;
+        
+        // Gather user data from various sources
         const userData = {};
-        userDataElements.forEach(elem => {
-            const label = elem.textContent.split('\n')[0].trim();
-            const value = elem.querySelector('.badge')?.textContent.trim();
+        
+        // Method 1: From list group items (user profile display)
+        document.querySelectorAll('.list-group-item').forEach(elem => {
+            const text = elem.textContent.trim();
+            const badge = elem.querySelector('.badge');
+            if (badge) {
+                const label = text.replace(badge.textContent, '').trim();
+                const value = badge.textContent.trim();
+                if (label && value) {
+                    userData[label] = value;
+                }
+            }
+        });
+        
+        // Method 2: From form inputs (if on form page)
+        document.querySelectorAll('input, select').forEach(input => {
+            if (input.value && input.name) {
+                userData[input.name] = input.value;
+            }
+        });
+        
+        // Method 3: From session storage or local storage
+        try {
+            const storedData = localStorage.getItem('fitnessUserData');
+            if (storedData) {
+                const parsed = JSON.parse(storedData);
+                Object.assign(userData, parsed);
+            }
+        } catch (e) {}
+
+        // Gather workout plan data
+        const workoutPlan = {};
+        document.querySelectorAll('.accordion-item').forEach(item => {
+            const button = item.querySelector('.accordion-button');
+            if (button) {
+                const buttonText = button.textContent.trim();
+                const parts = buttonText.split('-');
+                if (parts.length >= 2) {
+                    const day = parts[0].trim();
+                    const focus = parts[1].trim();
+                    const exercises = Array.from(item.querySelectorAll('.list-group-item')).map(ex => {
+                        return ex.textContent.trim();
+                    });
+                    workoutPlan[day] = { focus, exercises };
+                }
+            }
+        });
+        
+        // Gather diet plan data
+        const dietPlan = {};
+        document.querySelectorAll('.card').forEach(card => {
+            const title = card.querySelector('.card-title');
+            if (title && title.textContent.includes('Day')) {
+                const day = title.textContent.trim();
+                const meals = {};
+                card.querySelectorAll('.list-group-item').forEach(meal => {
+                    const mealText = meal.textContent.trim();
+                    const parts = mealText.split(':');
+                    if (parts.length >= 2) {
+                        meals[parts[0].trim()] = parts[1].trim();
+                    }
+                });
+                dietPlan[day] = meals;
+            }
+        });
+        
+        // Gather visible page content for context
+        const pageContent = {
+            title: document.title,
+            headings: Array.from(document.querySelectorAll('h1, h2, h3')).map(h => h.textContent.trim()),
+            visibleText: this.getVisiblePageText()
+        };
+        
+        // Gather BMI and health metrics if visible
+        const healthMetrics = {};
+        document.querySelectorAll('.progress-bar, .metric-value, .bmi-result').forEach(elem => {
+            const label = elem.getAttribute('data-label') || elem.previousElementSibling?.textContent || 'metric';
+            const value = elem.textContent.trim() || elem.getAttribute('data-value');
             if (value) {
-                userData[label] = value;
+                healthMetrics[label] = value;
             }
         });
 
-        // Gather workout plan
-        const workoutPlan = {};
-        document.querySelectorAll('.accordion-item').forEach(item => {
-            const day = item.querySelector('.accordion-button').textContent.split('-')[0].trim();
-            const focus = item.querySelector('.accordion-button').textContent.split('-')[1].trim();
-            const exercises = Array.from(item.querySelectorAll('.list-group-item')).map(ex => {
-                return ex.textContent.trim();
-            });
-            workoutPlan[day] = { focus, exercises };
+        this.currentContext = { 
+            userData, 
+            workoutPlan, 
+            dietPlan,
+            healthMetrics,
+            pageContent,
+            currentPage 
+        };
+        
+        console.log('Gathered context:', this.currentContext);
+    }
+    
+    getVisiblePageText() {
+        // Get key visible text from the page for context
+        const textElements = document.querySelectorAll('p, li, .card-text, .alert');
+        const visibleTexts = [];
+        
+        textElements.forEach(elem => {
+            if (elem.offsetParent !== null && elem.textContent.trim().length > 10) {
+                visibleTexts.push(elem.textContent.trim().substring(0, 100));
+            }
         });
-
-        this.currentContext = { userData, workoutPlan };
+        
+        return visibleTexts.slice(0, 5); // Limit to first 5 relevant texts
     }
 
     async processMessage(message) {
+        console.log('Processing message:', message);
+        
+        // Refresh context before each message
+        this.gatherPageContext();
+        console.log('Current context:', this.currentContext);
+        
         const loadingId = this.addMessage('loading', 'Thinking...');
+        
         try {
+            console.log('Sending request to /chat endpoint...');
+            const requestBody = {
+                message: message,
+                context: this.currentContext
+            };
+            console.log('Request body:', requestBody);
+            
             const response = await fetch('/chat', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({
-                    message: `Context: ${JSON.stringify(this.currentContext)}\n\nUser Question: ${message}`
-                })
+                body: JSON.stringify(requestBody)
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             if (!response.ok) {
-                throw new Error(`API request failed with status ${response.status}`);
+                const errorText = await response.text();
+                console.error('Response error text:', errorText);
+                throw new Error(`API request failed with status ${response.status}: ${errorText}`);
             }
 
             const data = await response.json();
+            console.log('Response data:', data);
+            
             if (data.error) {
                 throw new Error(data.error);
             }
@@ -152,17 +260,31 @@ class AIChat {
             }
 
             const aiResponse = data.response;
+            console.log('AI response:', aiResponse);
             this.removeMessage(loadingId);
             this.addMessage('ai', aiResponse);
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Chat Error Details:', {
+                message: error.message,
+                stack: error.stack,
+                response: error.response
+            });
             this.removeMessage(loadingId);
+            
             let errorMessage = 'Sorry, I encountered an error. Please try again.';
-            if (error.message.includes('401')) {
-                errorMessage = 'API key error. Please check your Gemini API key configuration.';
+            
+            // Check if it's a network error
+            if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                errorMessage = 'Network error. Please check your connection and try again.';
+            } else if (error.message.includes('401')) {
+                errorMessage = 'API key error. Please check your configuration.';
             } else if (error.message.includes('429')) {
                 errorMessage = 'Too many requests. Please try again in a moment.';
+            } else if (error.message.includes('500')) {
+                errorMessage = 'Server error. Please try again later.';
             }
+            
+            console.log('Showing error message:', errorMessage);
             this.addMessage('ai', errorMessage);
         }
     }
