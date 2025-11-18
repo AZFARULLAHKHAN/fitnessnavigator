@@ -35,7 +35,7 @@ class DashboardIntegration {
                 </div>
                 <div class="stat-card glass-card">
                     <div class="stat-icon">🎯</div>
-                    <div class="stat-value">73%</div>
+                    <div class="stat-value">75%</div>
                     <div class="stat-label">Goal Progress</div>
                     <div class="stat-change positive">On track</div>
                 </div>
