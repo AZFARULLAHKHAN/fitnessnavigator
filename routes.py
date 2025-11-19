@@ -413,6 +413,10 @@ def generate_plan():
             'food_preference': safe_str(request.form.get('food_preference', '')),
             'intensity': safe_str(request.form.get('intensity', ''))
         }
+        
+        # Debug logging
+        logging.info(f"Form data received - Intensity: '{user_data['intensity']}'")
+        logging.info(f"Full user data: {user_data}")
 
         # Basic validation - only check critical fields
         if not all([user_data['age'], user_data['gender'], user_data['height'], user_data['weight']]):
@@ -426,6 +430,7 @@ def generate_plan():
             user_data['bmi_category'] = bmi_category
 
             # Generate workout plan
+            logging.info(f"Generating workout plan with intensity: '{user_data['intensity']}'")
             workout_plan = generate_workout_plan(user_data['gender'], user_data['intensity'])
             
         except Exception as plan_error:
@@ -439,6 +444,10 @@ def generate_plan():
         session['user_data'] = user_data
         session['workout_plan'] = workout_plan
         session['current_week'] = 1
+        
+        # Debug logging
+        logging.info(f"Stored in session - user_data intensity: '{session['user_data'].get('intensity')}'")
+        logging.info(f"Generated workout plan keys: {list(workout_plan.keys()) if workout_plan else 'None'}")
         
         return redirect(url_for('diet_plan'))
     except Exception as e:
@@ -463,6 +472,10 @@ def diet_plan(week=1):
 
     # Generate diet plan for the requested week
     user_data = session['user_data']
+    
+    # Debug logging
+    logging.info(f"Diet plan generation - user intensity: '{user_data.get('intensity')}'")
+    
     diet_plan_data = generate_diet_plan(
         user_data['gender'], 
         user_data['food_preference'], 

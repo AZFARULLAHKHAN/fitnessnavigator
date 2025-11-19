@@ -42,6 +42,11 @@ def generate_diet_plan(gender, food_preference, bmi_category, week_number=1, use
     Returns:
         dict: Weekly diet plan with new structure
     """
+    import logging
+    
+    # Debug logging
+    logging.info(f"Diet plan generation - Input user_intensity: '{user_intensity}'")
+    
     # Map user intensity to diet levels if provided
     if user_intensity:
         intensity_mapping = {
@@ -50,6 +55,7 @@ def generate_diet_plan(gender, food_preference, bmi_category, week_number=1, use
             "hardcore": "advanced"
         }
         intensity = intensity_mapping.get(user_intensity, "beginner")
+        logging.info(f"Diet plan - Mapped '{user_intensity}' to '{intensity}'")
     else:
         # Fallback: Determine intensity level based on BMI
         if bmi_category in ["Underweight", "Normal weight"]:
@@ -58,6 +64,9 @@ def generate_diet_plan(gender, food_preference, bmi_category, week_number=1, use
             intensity = "intermediate"  # 2200-2400 kcal
         else:  # Obese
             intensity = "advanced"  # 2600-3000 kcal
+        logging.info(f"Diet plan - No user intensity, using BMI-based: '{intensity}'")
+    
+    logging.info(f"Diet plan - Final intensity level: '{intensity}' for week {week_number}")
     
     return generate_weekly_diet(intensity, food_preference, week_number)
 
