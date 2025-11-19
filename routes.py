@@ -411,32 +411,21 @@ def generate_plan():
             user_data['bmi'] = bmi
             user_data['bmi_category'] = bmi_category
 
-            # Generate plans
-            diet_plan = generate_diet_plan(user_data['gender'], user_data['food_preference'], bmi_category)
+            # Generate workout plan
             workout_plan = generate_workout_plan(user_data['gender'], user_data['intensity'])
             
-            # Debug: Log the generated diet plan
-            logging.info(f"Generated diet plan keys: {list(diet_plan.keys()) if isinstance(diet_plan, dict) else 'Not a dict'}")
-            logging.info(f"Diet plan type: {type(diet_plan)}")
         except Exception as plan_error:
             logging.error(f"Plan generation error: {plan_error}")
             flash('Error generating plans. Using default values.', 'info')
             user_data['bmi'] = 22.0
             user_data['bmi_category'] = 'Normal weight'
-            diet_plan = {'Monday': {'breakfast': 'Healthy breakfast', 'lunch': 'Balanced lunch', 'dinner': 'Nutritious dinner'}}
             workout_plan = {'Week 1': {'Monday': {'focus': 'Full Body', 'exercises': 'Basic exercises'}}}
 
         # Store in session
         session['user_data'] = user_data
-        session['diet_plan'] = diet_plan
         session['workout_plan'] = workout_plan
+        session['current_week'] = 1
         
-        # Also store in localStorage via JavaScript for persistence
-        session['store_in_local'] = True
-        
-        # Debug: Verify what was stored in session
-        logging.info(f"Stored diet plan keys in session: {list(session['diet_plan'].keys()) if isinstance(session['diet_plan'], dict) else 'Not a dict'}")
-
         return redirect(url_for('diet_plan'))
     except Exception as e:
         logging.error("Error in generate_plan: %s", e, exc_info=True)
@@ -444,31 +433,38 @@ def generate_plan():
         # Set minimal session data to continue
         session['user_data'] = {
             'age': 25, 'gender': 'male', 'height': 170, 'weight': 70,
-            'bmi': 24.2, 'bmi_category': 'Normal weight'
+            'bmi': 24.2, 'bmi_category': 'Normal weight', 'food_preference': 'veg'
         }
-        # Generate a proper fallback diet plan
-        fallback_diet = generate_diet_plan('male', 'veg', 'Normal weight')
-        session['diet_plan'] = fallback_diet
         session['workout_plan'] = {'Week 1': 'Sample workout plan'}
+        session['current_week'] = 1
         
-        # Debug: Log fallback diet plan
-        logging.info(f"Fallback diet plan keys: {list(fallback_diet.keys())}")
         return redirect(url_for('diet_plan'))
 
 @app.route('/diet_plan')
-def diet_plan():
-    if 'user_data' not in session or 'diet_plan' not in session:
+@app.route('/diet_plan/<int:week>')
+def diet_plan(week=1):
+    if 'user_data' not in session:
         flash('Please fill out the form first to generate your diet plan.', 'warning')
         return redirect(url_for('index'))
 
-    # Debug: Log the diet plan keys
-    diet_plan_data = session['diet_plan']
-    logging.info(f"Diet plan keys in session: {list(diet_plan_data.keys()) if isinstance(diet_plan_data, dict) else 'Not a dict'}")
+    # Generate diet plan for the requested week
+    user_data = session['user_data']
+    diet_plan_data = generate_diet_plan(
+        user_data['gender'], 
+        user_data['food_preference'], 
+        user_data['bmi_category'],
+        week,
+        user_data.get('intensity')  # Pass user intensity
+    )
+    
+    # Store current week in session
+    session['current_week'] = week
     
     return render_template(
         'diet_plan.html',
-        user_data=session['user_data'],
-        diet_plan=diet_plan_data
+        user_data=user_data,
+        diet_plan=diet_plan_data,
+        current_week=week
     )
 
 @app.route('/workout_plan')
@@ -489,12 +485,23 @@ def progress():
 
 @app.route('/download_diet_pdf')
 def download_diet_pdf():
-    if 'user_data' not in session or 'diet_plan' not in session:
+    if 'user_data' not in session:
         flash('Please generate your diet plan first.', 'warning')
         return redirect(url_for('index'))
     
-    pdf_buffer = create_diet_pdf(session['user_data'], session['diet_plan'])
-    return send_file(pdf_buffer, as_attachment=True, download_name='diet_plan.pdf', mimetype='application/pdf')
+    # Generate current week's diet plan
+    current_week = session.get('current_week', 1)
+    user_data = session['user_data']
+    diet_plan = generate_diet_plan(
+        user_data['gender'], 
+        user_data['food_preference'], 
+        user_data['bmi_category'],
+        current_week,
+        user_data.get('intensity')  # Pass user intensity
+    )
+    
+    pdf_buffer = create_diet_pdf(user_data, diet_plan)
+    return send_file(pdf_buffer, as_attachment=True, download_name=f'diet_plan_week_{current_week}.pdf', mimetype='application/pdf')
 
 @app.route('/download_workout_pdf')
 def download_workout_pdf():
@@ -507,22 +514,44 @@ def download_workout_pdf():
 
 @app.route('/download_grocery_pdf')
 def download_grocery_pdf():
-    if 'user_data' not in session or 'diet_plan' not in session:
+    if 'user_data' not in session:
         flash('Please generate your diet plan first.', 'warning')
         return redirect(url_for('index'))
     
-    grocery_list = generate_grocery_list(session['diet_plan'], session['user_data'])
-    pdf_buffer = create_grocery_pdf(grocery_list, session['user_data'])
-    return send_file(pdf_buffer, as_attachment=True, download_name='grocery_list.pdf', mimetype='application/pdf')
+    # Generate current week's diet plan
+    current_week = session.get('current_week', 1)
+    user_data = session['user_data']
+    diet_plan = generate_diet_plan(
+        user_data['gender'], 
+        user_data['food_preference'], 
+        user_data['bmi_category'],
+        current_week,
+        user_data.get('intensity')  # Pass user intensity
+    )
+    
+    grocery_list = generate_grocery_list(diet_plan, user_data)
+    pdf_buffer = create_grocery_pdf(grocery_list, user_data)
+    return send_file(pdf_buffer, as_attachment=True, download_name=f'grocery_list_week_{current_week}.pdf', mimetype='application/pdf')
 
 @app.route('/grocery_list')
 def grocery_list():
-    if 'user_data' not in session or 'diet_plan' not in session:
+    if 'user_data' not in session:
         flash('Please generate your diet plan first.', 'warning')
         return redirect(url_for('index'))
     
-    grocery_items = generate_grocery_list(session['diet_plan'], session['user_data'])
-    return render_template('grocery_list.html', grocery_list=grocery_items, user_data=session['user_data'])
+    # Generate current week's diet plan
+    current_week = session.get('current_week', 1)
+    user_data = session['user_data']
+    diet_plan = generate_diet_plan(
+        user_data['gender'], 
+        user_data['food_preference'], 
+        user_data['bmi_category'],
+        current_week,
+        user_data.get('intensity')  # Pass user intensity
+    )
+    
+    grocery_items = generate_grocery_list(diet_plan, user_data)
+    return render_template('grocery_list.html', grocery_list=grocery_items, user_data=user_data)
 
 @app.route('/meal_scanner')
 def meal_scanner():

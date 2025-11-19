@@ -8,6 +8,7 @@ html {
   body {
     padding-top: 56px; /* For fixed navbar */
     font-family: 'Roboto', sans-serif;
+    background-color: #212529 !important;
   }
   
   section {
@@ -92,7 +93,7 @@ html {
   
   /* User form */
   .form-section {
-    background-color: var(--bs-light);
+    background-color: #212529;
   }
   
   .form-card {
@@ -107,6 +108,9 @@ html {
   }
   
   /* Features section */
+  .features-section {
+      background-color: #212529 !important;
+  }
   .features-section h2.section-title,
   .features-section .section-title {
       color: white !important;
@@ -195,7 +199,7 @@ html {
   
   /* Testimonials - identical to nutrition tips */
   .testimonial-section {
-    background-color: #2c3e50;
+    background-color: #212529;
   }
   .testimonial-section .section-title {
     color: white !important;
@@ -386,7 +390,7 @@ html {
   
   /* Footer */
   .footer {
-    background-color: var(--bs-dark);
+    background-color: #212529;
     color: #fff;
     padding: 60px 0 30px;
   }
@@ -846,7 +850,10 @@ html {
       color: #212529 !important;
   }
   
-  .bmi-section,
+  .bmi-section {
+      background-color: #212529 !important;
+      color: #212529 !important;
+  }
   .success-stories-section {
       color: #212529 !important;
   }
@@ -1030,7 +1037,7 @@ html {
   }
   
   .form-section {
-      background: linear-gradient(135deg, #00c6ff 0%, #0072ff 50%, #8e2de2 100%) !important;
+      background: #2c3e50 !important;
       position: relative;
       overflow: hidden;
   }

@@ -28,41 +28,923 @@ def calculate_bmi(height, weight):
     
     return bmi, category
 
-def generate_diet_plan(gender, food_preference, bmi_category):
+def generate_diet_plan(gender, food_preference, bmi_category, week_number=1, user_intensity=None):
     """
-    Generate a weekly diet plan based on gender, food preference, and BMI category
+    Generate a weekly diet plan based on gender, food preference, BMI category, and week
     
     Args:
         gender (str): 'male' or 'female'
         food_preference (str): 'veg' or 'non-veg'
         bmi_category (str): BMI category
+        week_number (int): Week number (1-4)
+        user_intensity (str): User selected intensity ('easy', 'intermediate', 'hardcore')
         
     Returns:
-        dict: Weekly diet plan
+        dict: Weekly diet plan with new structure
     """
-    diet_plan = {}
+    # Map user intensity to diet levels if provided
+    if user_intensity:
+        intensity_mapping = {
+            "easy": "beginner",
+            "intermediate": "intermediate", 
+            "hardcore": "advanced"
+        }
+        intensity = intensity_mapping.get(user_intensity, "beginner")
+    else:
+        # Fallback: Determine intensity level based on BMI
+        if bmi_category in ["Underweight", "Normal weight"]:
+            intensity = "beginner"  # 1800-2000 kcal
+        elif bmi_category == "Overweight":
+            intensity = "intermediate"  # 2200-2400 kcal
+        else:  # Obese
+            intensity = "advanced"  # 2600-3000 kcal
     
-    # Base calorie adjustment based on BMI category
-    calorie_adjustment = 0
-    if bmi_category == "Underweight":
-        calorie_adjustment = 300  # Increase calories
-    elif bmi_category == "Overweight" or bmi_category == "Obese":
-        calorie_adjustment = -300  # Decrease calories
+    return generate_weekly_diet(intensity, food_preference, week_number)
+
+def generate_weekly_diet(intensity, food_preference, week_number):
+    """
+    Generate diet plan based on intensity level and week number
+    """
+    diet_plans = {
+        "beginner": get_beginner_diet(week_number, food_preference),
+        "intermediate": get_intermediate_diet(week_number, food_preference),
+        "advanced": get_advanced_diet(week_number, food_preference)
+    }
     
-    # Base calorie needs (simplified)
-    base_calories = 2000 if gender == "female" else 2500
-    adjusted_calories = base_calories + calorie_adjustment
-    
-    # Generate plan for each day of the week
-    days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-    
-    for day in days:
-        if food_preference == "veg":
-            diet_plan[day] = generate_veg_diet(day, gender, adjusted_calories, bmi_category)
-        else:
-            diet_plan[day] = generate_non_veg_diet(day, gender, adjusted_calories, bmi_category)
-    
-    return diet_plan
+    return diet_plans.get(intensity, diet_plans["beginner"])
+
+def get_beginner_diet(week_number, food_preference):
+    """Beginner level diet (1800-2000 kcal)"""
+    if week_number == 1:
+        return {
+            "level": "🔥 LEVEL 1 — BEGINNER (1800–2000 kcal)",
+            "week": "WEEK 1",
+            "protein_target": "75–90g",
+            "Monday": {
+                "early_morning": {"meal": "Warm water + chia (1 tsp)", "time": "6:00 AM"},
+                "breakfast": {"meal": "2 roti + Mixed sabzi + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice (1 cup) + Dal (1 bowl) + Leafy veg curry", "time": "1:00 PM"},
+                "snack": {"meal": "Banana (1)", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + " + ("Paneer 150g (bhurji)" if food_preference == "veg" else "Chicken 150g (grilled/boiled)"), "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~85g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha (1 bowl) + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk (1 glass)", "time": "4:00 PM"},
+                "dinner": {"meal": "Khichdi (1 bowl) + Curd (1 bowl)", "time": "8:00 PM"},
+                "calories": "~1800 kcal", "protein": "~75-80g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Lemon + warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts (1 bowl) + lemon + Apple (1)", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + rajma", "time": "1:00 PM"},
+                "snack": {"meal": "Roasted chana (1 handful)", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer 150g (bhurji)", "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~80-85g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 soaked almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Upma (1 bowl) + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + veggie curry", "time": "1:00 PM"},
+                "snack": {"meal": "Orange (1)", "time": "4:00 PM"},
+                "dinner": {"meal": ("2 roti + Paneer 150g + sautéed veggies" if food_preference == "veg" else "Chicken 150g + sautéed veggies"), "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~85g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + chole", "time": "1:00 PM"},
+                "snack": {"meal": "Sprouts (½ bowl)", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer bhurji (150g)", "time": "8:00 PM"},
+                "calories": "~1900-2000 kcal", "protein": "~80-90g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "2 idli + sambar + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Mixed veg curry", "time": "1:00 PM"},
+                "snack": {"meal": "Coconut water", "time": "4:00 PM"},
+                "dinner": {"meal": ("2 roti + Paneer curry 150g + vegetables" if food_preference == "veg" else "Chicken curry 150g + vegetables"), "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~85g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg sandwich (2 slices)", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Apple", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Egg curry (2 whole + 1 white)", "time": "8:00 PM"},
+                "calories": "~1850-1900 kcal", "protein": "~80-85g"
+            }
+        }
+    elif week_number == 2:
+        return {
+            "level": "🔥 LEVEL 1 — BEGINNER (1800–2000 kcal)",
+            "week": "WEEK 2",
+            "protein_target": "80–85g",
+            "Monday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha (1 bowl) + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Sabzi + dal", "time": "1:00 PM"},
+                "snack": {"meal": "Roasted chana (1 handful)", "time": "4:00 PM"},
+                "dinner": {"meal": "Rice (1 cup) + " + ("Paneer curry 150g" if food_preference == "veg" else "Chicken 150g"), "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~80-85g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Warm lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 1 fruit (banana/apple)", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + rajma", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk (1 glass)", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer curry 150g", "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~80g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + ½ banana", "time": "8:00 AM"},
+                "lunch": {"meal": "Khichdi + curd", "time": "1:00 PM"},
+                "snack": {"meal": "Coconut water", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Egg curry (2 whole + 1 white)", "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~82g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Upma (1 bowl)", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + seasonal vegetables", "time": "1:00 PM"},
+                "snack": {"meal": "Apple", "time": "4:00 PM"},
+                "dinner": {"meal": "Rice + " + ("Paneer 150g" if food_preference == "veg" else "fish 120g"), "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~80g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "2 idli + sambar", "time": "8:00 AM"},
+                "lunch": {"meal": "Veg pulao + raita", "time": "1:00 PM"},
+                "snack": {"meal": "Sprouts salad", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer 150g", "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~80-85g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "2 boiled eggs + 2 slices brown bread", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Chole", "time": "1:00 PM"},
+                "snack": {"meal": "Orange", "time": "4:00 PM"},
+                "dinner": {"meal": "Rice + " + ("Paneer curry 150g" if food_preference == "veg" else "chicken 150g"), "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~85g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter (1 tsp)", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk", "time": "4:00 PM"},
+                "dinner": {"meal": "Paneer 150g + veg", "time": "8:00 PM"},
+                "calories": "~1850-1900 kcal", "protein": "~82-85g"
+            }
+        }
+    # Add weeks 3 and 4 for beginner level
+    elif week_number == 3:
+        return {
+            "level": "🔥 LEVEL 1 — BEGINNER (1800–2000 kcal)",
+            "week": "WEEK 3",
+            "protein_target": "80–85g",
+            "Monday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + dal + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Roasted chana", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer curry 150g", "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~80-85g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + lemon + peanuts", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + veg", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk", "time": "4:00 PM"},
+                "dinner": {"meal": ("2 roti + Paneer curry 150g" if food_preference == "veg" else "Chicken curry 150g + 2 roti"), "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~85g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Lemon warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 1 apple", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + rajma", "time": "1:00 PM"},
+                "snack": {"meal": "Coconut water", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer bhurji 150g", "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~80-85g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Upma + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Orange", "time": "4:00 PM"},
+                "dinner": {"meal": "Egg curry (2 whole + 1 egg white) + 1 roti", "time": "8:00 PM"},
+                "calories": "~1850-1900 kcal", "protein": "~80g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter (1 tsp)", "time": "8:00 AM"},
+                "lunch": {"meal": "Khichdi + curd", "time": "1:00 PM"},
+                "snack": {"meal": "Sprouts", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + " + ("Paneer 150g" if food_preference == "veg" else "Chicken 150g"), "time": "8:00 PM"},
+                "calories": "~1900 kcal", "protein": "~85g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "2 idli + sambar", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + chole", "time": "1:00 PM"},
+                "snack": {"meal": "Apple", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Paneer 150g", "time": "8:00 PM"},
+                "calories": "~1850-1900 kcal", "protein": "~80-85g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg sandwich", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + leafy veg", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk", "time": "4:00 PM"},
+                "dinner": {"meal": ("Paneer curry 150g + 1 roti" if food_preference == "veg" else "Fish curry 120-150g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~1850 kcal", "protein": "~80g"
+            }
+        }
+    else:  # week 4
+        return {
+            "level": "🔥 LEVEL 1 — BEGINNER (1800–2000 kcal)",
+            "week": "WEEK 4",
+            "protein_target": "80–85g",
+            "Monday": {
+                "early_morning": {"meal": "Lemon warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + veg", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk", "time": "4:00 PM"},
+                "dinner": {"meal": ("Chicken 150g + 2 roti" if food_preference == "non-veg" else "Paneer curry 150g + 2 roti"), "time": "8:00 PM"},
+                "calories": "~1900 kcal",
+                "protein": "~85g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Upma (1 bowl) + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + dal + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Apple", "time": "4:00 PM"},
+                "dinner": {"meal": "Paneer curry 150g + 2 roti", "time": "8:00 PM"},
+                "calories": "~1850-1900 kcal",
+                "protein": "~82-85g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Warm water + chia", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts + 1 fruit", "time": "8:00 AM"},
+                "lunch": {"meal": "Rajma + rice", "time": "1:00 PM"},
+                "snack": {"meal": "Coconut water", "time": "4:00 PM"},
+                "dinner": {"meal": ("2 roti + Fish curry (120-150g)" if food_preference == "non-veg" else "2 roti + Paneer curry 150g"), "time": "8:00 PM"},
+                "calories": "~1850 kcal",
+                "protein": "~80-85g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 soaked almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + lemon", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + veg curry", "time": "1:00 PM"},
+                "snack": {"meal": "Roasted chana", "time": "4:00 PM"},
+                "dinner": {"meal": "2 roti + Egg curry (2 whole + 1 white)", "time": "8:00 PM"},
+                "calories": "~1850 kcal",
+                "protein": "~80-85g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Idli (2) + sambar", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + chole", "time": "1:00 PM"},
+                "snack": {"meal": "Sprouts", "time": "4:00 PM"},
+                "dinner": {"meal": "Paneer 150g + veg", "time": "8:00 PM"},
+                "calories": "~1900 kcal",
+                "protein": "~80-85g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (2 slices + 1 egg)", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "snack": {"meal": "Orange", "time": "4:00 PM"},
+                "dinner": {"meal": ("Chicken curry 150g + 1 roti" if food_preference == "non-veg" else "Paneer curry 150g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~1900 kcal",
+                "protein": "~85g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg sandwich", "time": "8:00 AM"},
+                "lunch": {"meal": "Roti (2) + dal + veg", "time": "1:00 PM"},
+                "snack": {"meal": "Buttermilk", "time": "4:00 PM"},
+                "dinner": {"meal": "Paneer bhurji 150g", "time": "8:00 PM"},
+                "calories": "~1850-1900 kcal",
+                "protein": "~80g"
+            }
+        }
+
+def get_intermediate_diet(week_number, food_preference):
+    """Intermediate level diet (2200-2400 kcal)"""
+    if week_number == 1:
+        return {
+            "level": "🔥 LEVEL 2 — INTERMEDIATE (2200–2400 kcal)",
+            "week": "WEEK 1",
+            "protein_target": "130–140g",
+            "Monday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "2 roti + sabzi + 2 boiled eggs + Soaked chana (½ bowl)", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice (1 cup) + Leafy veg curry + 2 egg whites", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats + milk + banana + 1 tbsp peanut butter", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + 1 whole egg", "time": "6:30 PM"},
+                "dinner": {"meal": "2 roti + " + ("Paneer 250g" if food_preference == "veg" else "Chicken 250g"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~135g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Warm water + lemon", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 1 fruit (apple/banana) + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi + Curd (½ bowl)", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + black coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop) OR 3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Rice + " + ("Paneer 200g" if food_preference == "veg" else "Fish 200g"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130–135g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg omelette (3 eggs) + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + Dal + " + ("Paneer curry 100g" if food_preference == "veg" else "Chicken curry 100g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter bread (1 slice + PB)", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + any fruit juice", "time": "6:30 PM"},
+                "dinner": {"meal": "2 roti + Paneer 200g", "time": "8:00 PM"},
+                "calories": "~2250–2350 kcal",
+                "protein": "~130g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 soaked almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + mixed veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "2 dates + 1 banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 whole egg + 3 whites", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer tikka 200g" if food_preference == "veg" else "Chicken tikka / grilled chicken 200g"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~135g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + rajma", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats shake (oats + milk + banana)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + 2 roti", "time": "8:00 PM"},
+                "calories": "~2350 kcal",
+                "protein": "~130g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (2 slices + 2 eggs)", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer curry + rice" if food_preference == "veg" else "Chicken curry + rice"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 200g + 1 roti" if food_preference == "veg" else "Fish 200g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130–135g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Warm water + chia", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Veg biryani (1 bowl) + Curd (½ bowl)", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Juice + 3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2200–2300 kcal",
+                "protein": "~125–130g"
+            }
+        }
+    elif week_number == 2:
+        return {
+            "level": "🔥 LEVEL 2 — INTERMEDIATE (2200–2400 kcal)",
+            "week": "WEEK 2",
+            "protein_target": "125–135g",
+            "Monday": {
+                "early_morning": {"meal": "Warm lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Upma (1 bowl) + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + 1 whole egg", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + salad" if food_preference == "veg" else "Chicken 250g + salad"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + ½ banana", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + dal + mixed veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "1 slice bread + peanut butter", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer curry 200g + 2 roti", "time": "8:00 PM"},
+                "calories": "~2300–2400 kcal",
+                "protein": "~130–135g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha (1 bowl) + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + juice", "time": "6:30 PM"},
+                "dinner": {"meal": "Egg curry (3 whole eggs) + 1 roti", "time": "8:00 PM"},
+                "calories": "~2250–2350 kcal",
+                "protein": "~125–130g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg omelette (3 eggs) + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + rajma", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer grilled 200g + veg" if food_preference == "veg" else "Chicken grilled 200g + veg"), "time": "8:00 PM"},
+                "calories": "~2350 kcal",
+                "protein": "~135g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 1 fruit + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + chole", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter bread", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + 2 roti", "time": "8:00 PM"},
+                "calories": "~2300–2400 kcal",
+                "protein": "~130g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Idli 2 + sambar + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 whole egg + 3 whites", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer curry 200g + 1 roti" if food_preference == "veg" else "Fish curry 200g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (2 eggs + 2 slices)", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer curry + rice" if food_preference == "veg" else "Chicken curry + rice"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer tikka 200g", "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130–135g"
+            }
+        }
+    elif week_number == 3:
+        return {
+            "level": "🔥 LEVEL 2 — INTERMEDIATE (2200–2400 kcal)",
+            "week": "WEEK 3",
+            "protein_target": "125–135g",
+            "Monday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + " + ("paneer curry 150g" if food_preference == "veg" else "chicken curry 150g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter bread", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + juice", "time": "6:30 PM"},
+                "dinner": {"meal": "2 roti + Paneer curry 200g", "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Lemon warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + dal + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer curry 200g + 1 roti" if food_preference == "veg" else "Fish curry 200g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130–135g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Chia + warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Idli (2) + sambar + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Rajma + rice", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 whole egg + 3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 200g + salad" if food_preference == "veg" else "Chicken 200g + salad"), "time": "8:00 PM"},
+                "calories": "~2350 kcal",
+                "protein": "~130g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg omelette (3 eggs) + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + dal + veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + veg", "time": "8:00 PM"},
+                "calories": "~2300–2400 kcal",
+                "protein": "~130–135g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts + 1 fruit + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + chole", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter oats shake", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 200g + 1 roti" if food_preference == "veg" else "Fish 200g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2250–2350 kcal",
+                "protein": "~130g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (2 eggs + 2 slices)", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2) + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer curry 200g" if food_preference == "veg" else "Chicken curry 200g"), "time": "8:00 PM"},
+                "calories": "~2350–2400 kcal",
+                "protein": "~135g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter (1 tbsp)", "time": "8:00 AM"},
+                "lunch": {"meal": "Veg biryani + curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 egg + 3 whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2250–2300 kcal",
+                "protein": "~125–130g"
+            }
+        }
+    else:  # week 4
+        return {
+            "level": "🔥 LEVEL 2 — INTERMEDIATE (2200–2400 kcal)",
+            "week": "WEEK 4",
+            "protein_target": "125–135g",
+            "Monday": {
+                "early_morning": {"meal": "Lemon warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + 1 whole egg", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + veg" if food_preference == "veg" else "Chicken 250g + veg"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~135g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Jeera water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Upma + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + dal + veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter bread", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer curry 200g + 2 roti", "time": "8:00 PM"},
+                "calories": "~2300–2400 kcal",
+                "protein": "~130–135g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 1 banana + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Rajma + rice", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 whole egg + 3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 200g + 1 roti" if food_preference == "veg" else "Fish 200g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Veg omelette (3 eggs) + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + dal + veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 200g + salad" if food_preference == "veg" else "Chicken 200g + salad"), "time": "8:00 PM"},
+                "calories": "~2300 kcal",
+                "protein": "~130–135g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + leafy sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats shake", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + 2 roti", "time": "8:00 PM"},
+                "calories": "~2350 kcal",
+                "protein": "~135g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (2 eggs + 2 slices)", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer curry + rice" if food_preference == "veg" else "Chicken curry + rice"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 200g" if food_preference == "veg" else "Fish 200g"), "time": "8:00 PM"},
+                "calories": "~2300–2400 kcal",
+                "protein": "~130–135g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter (1 tbsp)", "time": "8:00 AM"},
+                "lunch": {"meal": "Veg biryani (1 bowl) + curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 egg + 3 whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 200g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2250–2300 kcal",
+                "protein": "~125–130g"
+            }
+        }
+
+def get_advanced_diet(week_number, food_preference):
+    """Advanced level diet (2600-3000 kcal)"""
+    if week_number == 1:
+        return {
+            "level": "🔥 LEVEL 3 — ADVANCED (2600–3000 kcal)",
+            "week": "WEEK 1",
+            "protein_target": "155–170g",
+            "Monday": {
+                "early_morning": {"meal": "Chia + electrolytes", "time": "6:00 AM"},
+                "breakfast": {"meal": "3-egg omelette + 2 roti + 1 slice bread + peanut butter", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + Dal + " + ("Paneer 200g" if food_preference == "veg" else "Chicken 200g") + " + Salad", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats + milk + banana + dates + 1 tbsp PB", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop) + 2 boiled eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + 2 roti" if food_preference == "veg" else "Chicken 300g + 2 roti"), "time": "8:00 PM"},
+                "calories": "~2900 kcal",
+                "protein": "~165g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "3 idlis + sambar + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "3 roti + Paneer 200g + Dal", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + whey + 5 almonds", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + juice", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + rice (1 cup)" if food_preference == "veg" else "Mutton 250g + rice (1 cup)"), "time": "8:00 PM"},
+                "calories": "~3000 kcal",
+                "protein": "~160–170g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Warm electrolytes", "time": "6:00 AM"},
+                "breakfast": {"meal": "Chole + 2 roti + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Brown rice + Rajma + Curd (½ bowl)", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter oats shake", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey + 2 boiled eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + veg" if food_preference == "veg" else "Grilled chicken 300g + veg"), "time": "8:00 PM"},
+                "calories": "~2850–2950 kcal",
+                "protein": "~165g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "Lemon honey water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Heavy oats bowl (oats + milk + banana + PB) + 1 egg", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer curry 200g" if food_preference == "veg" else "Chicken curry 200g") + " + 2 roti", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + dates", "time": "4:30 PM"},
+                "post_workout": {"meal": "1 scoop whey", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + 1 roti" if food_preference == "veg" else "Fish 300g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2800–2900 kcal",
+                "protein": "~160g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 2 boiled eggs + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "Veg pulao + Dal + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Eggs (3 whites + 1 whole)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g" if food_preference == "veg" else "Chicken 300g"), "time": "8:00 PM"},
+                "calories": "~2700–2850 kcal",
+                "protein": "~160g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Electrolyte drink", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (3 eggs + 3 slices bread)", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + whey", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 whole eggs", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g (grilled/bhurji)", "time": "8:00 PM"},
+                "calories": "~2600–2750 kcal",
+                "protein": "~150–160g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + banana + PB + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer biryani (1.5 cups)" if food_preference == "veg" else "Chicken biryani (1.5 cups)") + " + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "3 dates + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + veg" if food_preference == "veg" else "Fish 250g + veg"), "time": "8:00 PM"},
+                "calories": "~2900 kcal",
+                "protein": "~155–160g"
+            }
+        }
+    elif week_number == 2:
+        return {
+            "level": "🔥 LEVEL 3 — ADVANCED (2600–3000 kcal)",
+            "week": "WEEK 2",
+            "protein_target": "150–170g",
+            "Monday": {
+                "early_morning": {"meal": "Coconut water + 5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "3 eggs omelette + 2 roti + 1 slice bread + peanut butter", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + Dal + " + ("Paneer 200g" if food_preference == "veg" else "Chicken 200g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + whey + dates", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 boiled eggs", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2800–2950 kcal",
+                "protein": "~160–170g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Warm water + chia", "time": "6:00 AM"},
+                "breakfast": {"meal": "Idli 3 + sambar + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Paneer 200g + Dal", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer curry 250g + rice" if food_preference == "veg" else "Mutton curry 250g + rice"), "time": "8:00 PM"},
+                "calories": "~3000 kcal",
+                "protein": "~165g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Lemon honey water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Chole + 2 roti + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + Rajma + Salad", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter shake", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + juice", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer grill 300g" if food_preference == "veg" else "Chicken grill 300g"), "time": "8:00 PM"},
+                "calories": "~2800 kcal",
+                "protein": "~160g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "Electrolyte drink", "time": "6:00 AM"},
+                "breakfast": {"meal": "Heavy oats bowl (oats + milk + banana + PB) + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + " + ("paneer 100g" if food_preference == "veg" else "chicken 100g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + 1 roti" if food_preference == "veg" else "Fish 300g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2700–2850 kcal",
+                "protein": "~160g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Warm water + chia", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 2 boiled eggs + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + chole + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + 1 egg", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g", "time": "8:00 PM"},
+                "calories": "~2700 kcal",
+                "protein": "~150–160g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (3 eggs + 3 bread slices)", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter oats shake", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 boiled eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g" if food_preference == "veg" else "Chicken 300g"), "time": "8:00 PM"},
+                "calories": "~2800–3000 kcal",
+                "protein": "~160–170g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter + banana + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer biryani (large bowl)" if food_preference == "veg" else "Chicken biryani (large bowl)") + " + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates 3–4", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + veg" if food_preference == "veg" else "Fish 250g + veg"), "time": "8:00 PM"},
+                "calories": "~2900 kcal",
+                "protein": "~160g"
+            }
+        }
+    elif week_number == 3:
+        return {
+            "level": "🔥 LEVEL 3 — ADVANCED (2600–3000 kcal)",
+            "week": "WEEK 3",
+            "protein_target": "155–170g",
+            "Monday": {
+                "early_morning": {"meal": "Electrolyte drink", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana + peanut butter + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer curry 200g" if food_preference == "veg" else "Chicken curry 200g") + " + Rice (1 cup) + Veg salad", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Peanut butter bread", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop) + 1 banana", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2800 kcal",
+                "protein": "~160–165g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Lemon honey water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + sabzi + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 boiled eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + 1 roti" if food_preference == "veg" else "Fish 300g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2700–2850 kcal",
+                "protein": "~160–170g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "3 egg omelette + 1 roti", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + Rajma + Veg salad", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats shake (oats + milk + banana)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer grill 300g" if food_preference == "veg" else "Chicken grill 300g"), "time": "8:00 PM"},
+                "calories": "~2900 kcal",
+                "protein": "~165g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (3 eggs + 3 slices)", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + dal + " + ("paneer 150g" if food_preference == "veg" else "chicken 150g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + juice", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g", "time": "8:00 PM"},
+                "calories": "~2750–2900 kcal",
+                "protein": "~155–165g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + sabzi", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (3–4) + whey", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 whole eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + veg" if food_preference == "veg" else "Chicken 300g + veg"), "time": "8:00 PM"},
+                "calories": "~2800–2950 kcal",
+                "protein": "~160–170g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Electrolyte + 5 almonds", "time": "6:00 AM"},
+                "breakfast": {"meal": "Idli 3 + sambar + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer biryani (1.5 cups)" if food_preference == "veg" else "Chicken biryani (1.5 cups)") + " + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + veg" if food_preference == "veg" else "Fish 250g + veg"), "time": "8:00 PM"},
+                "calories": "~2900–3000 kcal",
+                "protein": "~160g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon + warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rajma + rice + salad", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + dates (2–3)", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + 1 whole egg", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2700–2850 kcal",
+                "protein": "~155–165g"
+            }
+        }
+    else:  # week 4
+        return {
+            "level": "🔥 LEVEL 3 — ADVANCED (2600–3000 kcal)",
+            "week": "WEEK 4",
+            "protein_target": "155–170g",
+            "Monday": {
+                "early_morning": {"meal": "Lemon honey water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + milk + banana + peanut butter + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer curry 200g" if food_preference == "veg" else "Chicken curry 200g") + " + 2 roti + Salad", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + banana", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop) + 3 egg whites", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g + 1 roti", "time": "8:00 PM"},
+                "calories": "~2800–2950 kcal",
+                "protein": "~160–170g"
+            },
+            "Tuesday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Poha + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Rice + Dal + " + ("Paneer 150g" if food_preference == "veg" else "Chicken 150g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + dates", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g + veg" if food_preference == "veg" else "Fish 300g + veg"), "time": "8:00 PM"},
+                "calories": "~2750–2900 kcal",
+                "protein": "~160g"
+            },
+            "Wednesday": {
+                "early_morning": {"meal": "Chia water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Bread omelette (3 eggs + 3 slices)", "time": "8:00 AM"},
+                "lunch": {"meal": "Rajma + rice", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Oats shake", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 boiled eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer grill 300g" if food_preference == "veg" else "Chicken grill 300g"), "time": "8:00 PM"},
+                "calories": "~2900 kcal",
+                "protein": "~160–170g"
+            },
+            "Thursday": {
+                "early_morning": {"meal": "Warm electrolyte drink", "time": "6:00 AM"},
+                "breakfast": {"meal": "Idli 3 + sambar + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "2 roti + Dal + veg", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + PB (1 tbsp)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey (1 scoop)", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g + salad", "time": "8:00 PM"},
+                "calories": "~2700–2850 kcal",
+                "protein": "~155–165g"
+            },
+            "Friday": {
+                "early_morning": {"meal": "Lemon warm water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Sprouts bowl + 2 boiled eggs", "time": "8:00 AM"},
+                "lunch": {"meal": ("Paneer biryani (1.5 cups)" if food_preference == "veg" else "Chicken biryani (1.5 cups)") + " + Curd", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Banana + coffee", "time": "4:30 PM"},
+                "post_workout": {"meal": "3 egg whites + 1 whole egg", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 250g + 1 roti" if food_preference == "veg" else "Fish 250g + 1 roti"), "time": "8:00 PM"},
+                "calories": "~2900 kcal",
+                "protein": "~155–165g"
+            },
+            "Saturday": {
+                "early_morning": {"meal": "Coconut water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Heavy oats bowl (oats + milk + banana + PB) + 1 boiled egg", "time": "8:00 AM"},
+                "lunch": {"meal": "Dal + rice + " + ("paneer 150g" if food_preference == "veg" else "chicken 150g"), "time": "1:00 PM"},
+                "pre_workout": {"meal": "Dates (3–4)", "time": "4:30 PM"},
+                "post_workout": {"meal": "Whey", "time": "6:30 PM"},
+                "dinner": {"meal": "Paneer 300g + veg", "time": "8:00 PM"},
+                "calories": "~2700–2850 kcal",
+                "protein": "~160g"
+            },
+            "Sunday": {
+                "early_morning": {"meal": "Lemon water", "time": "6:00 AM"},
+                "breakfast": {"meal": "Oats + peanut butter + banana + 2 eggs", "time": "8:00 AM"},
+                "lunch": {"meal": "Chole + 2 roti", "time": "1:00 PM"},
+                "pre_workout": {"meal": "Coffee + dates", "time": "4:30 PM"},
+                "post_workout": {"meal": "2 whole eggs", "time": "6:30 PM"},
+                "dinner": {"meal": ("Paneer 300g" if food_preference == "veg" else "Chicken 300g"), "time": "8:00 PM"},
+                "calories": "~2900–3000 kcal",
+                "protein": "~165g"
+            }
+        }
 
 def generate_veg_diet(day, gender, calories, bmi_category):
     """Generate vegetarian diet for a specific day"""
