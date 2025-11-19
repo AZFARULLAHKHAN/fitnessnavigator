@@ -1625,6 +1625,21 @@ def generate_workout_plan(gender, intensity):
     Returns:
         dict: Monthly workout plan
     """
+    # Normalize intensity input to handle variations
+    if intensity:
+        intensity = intensity.lower().strip()
+        # Map user selections to internal intensity levels
+        if intensity in ['easy', 'beginner', 'low']:
+            intensity = 'easy'
+        elif intensity in ['intermediate', 'medium', 'moderate']:
+            intensity = 'intermediate'
+        elif intensity in ['hardcore', 'hard', 'advanced', 'high']:
+            intensity = 'hardcore'
+        else:
+            intensity = 'easy'  # Default fallback
+    else:
+        intensity = 'easy'  # Default if no intensity provided
+    
     # Base workout plan structure with 4 weeks
     workout_plan = {
         "Week 1": {},
@@ -1821,6 +1836,21 @@ def get_exercise_video_url(name):
 
 def generate_daily_workout(day, gender, intensity, week):
     """Generate a daily workout based on day, gender, intensity, and week"""
+    # Normalize intensity to ensure proper matching
+    if intensity:
+        intensity = intensity.lower().strip()
+        # Map user selections to internal intensity levels
+        if intensity in ['easy', 'beginner', 'low']:
+            intensity = 'easy'
+        elif intensity in ['intermediate', 'medium', 'moderate']:
+            intensity = 'intermediate'
+        elif intensity in ['hardcore', 'hard', 'advanced', 'high']:
+            intensity = 'hardcore'
+        else:
+            intensity = 'easy'  # Default fallback
+    else:
+        intensity = 'easy'  # Default if no intensity provided
+    
     # Rest days
     if day == "Sunday":
         workout = {
