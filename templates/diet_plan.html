@@ -10,14 +10,15 @@
             <div class="col-md-8">
                 <h1 class="display-4">Your Personalized Diet Plan</h1>
                 <p class="lead">Tailored to your body type, preferences, and goals</p>
+                <p class="text-light">Currently viewing: <strong>Week {{ current_week }}</strong></p>
             </div>
             <div class="col-md-4 text-end">
                 <div class="btn-group-vertical">
                     <a href="{{ url_for('grocery_list') }}" class="btn btn-success btn-lg mb-2">
-                        🛒 Grocery List
+                        🛒 Grocery List (Week {{ current_week }})
                     </a>
                     <a href="{{ url_for('download_diet_pdf') }}" class="btn btn-light btn-lg">
-                        📄 Download PDF
+                        📄 Download PDF (Week {{ current_week }})
                     </a>
                 </div>
             </div>
@@ -117,7 +118,21 @@
 <!-- Diet Plan Section -->
 <section class="diet-plan-section py-5 diet-content">
     <div class="container">
-        <h2 class="text-center section-title mb-5">Weekly Diet Plan</h2>
+        <div class="text-center mb-5">
+            <h2 class="section-title">{{ diet_plan.level }}</h2>
+            <h3 class="text-primary">{{ diet_plan.week }}</h3>
+            <p class="lead">Protein Target: <strong>{{ diet_plan.protein_target }}</strong></p>
+            
+            <!-- Week Navigation -->
+            <div class="btn-group mb-4" role="group">
+                {% for week_num in range(1, 5) %}
+                    <a href="{{ url_for('diet_plan', week=week_num) }}" 
+                       class="btn {% if current_week == week_num %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                        Week {{ week_num }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
         
         <div class="accordion" id="dietPlanAccordion">
             {% set ordered_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
@@ -134,73 +149,107 @@
                         <div id="collapse{{ day }}" class="accordion-collapse collapse {% if loop.first %}show{% endif %}" aria-labelledby="heading{{ day }}" data-bs-parent="#dietPlanAccordion">
                             <div class="accordion-body">
                                 <div class="row">
-                                    <!-- Breakfast -->
-                                    <div class="col-md-6">
+                                    <!-- Daily Summary -->
+                                    {% if meals.calories %}
+                                    <div class="col-12">
+                                        <div class="alert alert-primary text-center mb-3">
+                                            <strong>Daily Summary:</strong> {{ meals.calories }} | <strong>Protein:</strong> {{ meals.protein }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Early Morning -->
+                                    {% if meals.early_morning %}
+                                    <div class="col-md-6 col-lg-4">
                                         <div class="card meal-card mb-3 fade-in">
-                                            <img src="{{ 'https://images.unsplash.com/photo-1533089860892-a7c6f0a88666?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}" class="card-img-top" alt="Healthy Breakfast" style="height: 200px; object-fit: cover;">
                                             <div class="card-body">
-                                                <h5 class="card-title"><i class="fas fa-coffee me-2"></i>Breakfast</h5>
-                                                <h6>{{ meals.breakfast.meal }}</h6>
-                                                <p>{{ meals.breakfast.details }}</p>
-                                                <div class="text-muted">
-                                                    <small>{{ meals.breakfast.calories }}</small>
-                                                </div>
+                                                <h6 class="card-title"><i class="fas fa-sun me-2"></i>Early Morning</h6>
+                                                <p class="mb-1"><strong>{{ meals.early_morning.meal }}</strong></p>
+                                                <small class="text-muted">{{ meals.early_morning.time }}</small>
                                             </div>
                                         </div>
                                     </div>
+                                    {% endif %}
+
+                                    <!-- Breakfast -->
+                                    {% if meals.breakfast %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card meal-card mb-3 fade-in">
+                                            <div class="card-body">
+                                                <h6 class="card-title"><i class="fas fa-coffee me-2"></i>Breakfast</h6>
+                                                <p class="mb-1"><strong>{{ meals.breakfast.meal }}</strong></p>
+                                                {% if meals.breakfast.details %}
+                                                <p class="mb-1">{{ meals.breakfast.details }}</p>
+                                                {% endif %}
+                                                <small class="text-muted">{{ meals.breakfast.time }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
 
                                     <!-- Lunch -->
-                                    <div class="col-md-6">
+                                    {% if meals.lunch %}
+                                    <div class="col-md-6 col-lg-4">
                                         <div class="card meal-card mb-3 fade-in">
-                                            <img src="{{ 'https://images.unsplash.com/photo-1547496502-affa22d38842?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}" class="card-img-top" alt="Healthy Lunch" style="height: 200px; object-fit: cover;">
                                             <div class="card-body">
-                                                <h5 class="card-title"><i class="fas fa-utensils me-2"></i>Lunch</h5>
-                                                <h6>{{ meals.lunch.meal }}</h6>
-                                                <p>{{ meals.lunch.details }}</p>
-                                                <div class="text-muted">
-                                                    <small>{{ meals.lunch.calories }}</small>
-                                                </div>
+                                                <h6 class="card-title"><i class="fas fa-utensils me-2"></i>Lunch</h6>
+                                                <p class="mb-1"><strong>{{ meals.lunch.meal }}</strong></p>
+                                                {% if meals.lunch.details %}
+                                                <p class="mb-1">{{ meals.lunch.details }}</p>
+                                                {% endif %}
+                                                <small class="text-muted">{{ meals.lunch.time }}</small>
                                             </div>
                                         </div>
                                     </div>
+                                    {% endif %}
+
+                                    <!-- Snack -->
+                                    {% if meals.snack %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card meal-card mb-3 fade-in">
+                                            <div class="card-body">
+                                                <h6 class="card-title"><i class="fas fa-apple-alt me-2"></i>Snack</h6>
+                                                <p class="mb-1"><strong>{{ meals.snack.meal }}</strong></p>
+                                                <small class="text-muted">{{ meals.snack.time }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Pre-workout -->
+                                    {% if meals.pre_workout %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card meal-card mb-3 fade-in">
+                                            <div class="card-body">
+                                                <h6 class="card-title"><i class="fas fa-dumbbell me-2"></i>Pre-workout</h6>
+                                                <p class="mb-1"><strong>{{ meals.pre_workout.meal }}</strong></p>
+                                                <small class="text-muted">{{ meals.pre_workout.time }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+
+                                    <!-- Post-workout -->
+                                    {% if meals.post_workout %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="card meal-card mb-3 fade-in">
+                                            <div class="card-body">
+                                                <h6 class="card-title"><i class="fas fa-trophy me-2"></i>Post-workout</h6>
+                                                <p class="mb-1"><strong>{{ meals.post_workout.meal }}</strong></p>
+                                                <small class="text-muted">{{ meals.post_workout.time }}</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
 
                                     <!-- Dinner -->
-                                    <div class="col-md-6">
+                                    {% if meals.dinner %}
+                                    <div class="col-md-6 col-lg-4">
                                         <div class="card meal-card mb-3 fade-in">
-                                            <img src="{{ 'https://images.unsplash.com/photo-1546549032-9571cd6b27df?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}" class="card-img-top" alt="Healthy Dinner" style="height: 200px; object-fit: cover;">
                                             <div class="card-body">
-                                                <h5 class="card-title"><i class="fas fa-moon me-2"></i>Dinner</h5>
-                                                <h6>{{ meals.dinner.meal }}</h6>
-                                                <p>{{ meals.dinner.details }}</p>
-                                                <div class="text-muted">
-                                                    <small>{{ meals.dinner.calories }}</small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Snacks -->
-                                    {% if meals.snacks %}
-                                    <div class="col-md-6">
-                                        <div class="card meal-card mb-3 fade-in">
-                                            <img src="{{ 'https://images.unsplash.com/photo-1505576399279-565b52d4ac71?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}" class="card-img-top" alt="Healthy Snacks" style="height: 200px; object-fit: cover;">
-                                            <div class="card-body">
-                                                <h5 class="card-title"><i class="fas fa-apple-alt me-2"></i>Snacks</h5>
-                                                {% if meals.snacks.Morning %}
-                                                <h6>Morning Snack</h6>
-                                                <p>{{ meals.snacks.Morning.meal }}: {{ meals.snacks.Morning.details }}</p>
-                                                <div class="text-muted mb-3">
-                                                    <small>{{ meals.snacks.Morning.calories }}</small>
-                                                </div>
-                                                {% endif %}
-
-                                                {% if meals.snacks.Evening %}
-                                                <h6>Evening Snack</h6>
-                                                <p>{{ meals.snacks.Evening.meal }}: {{ meals.snacks.Evening.details }}</p>
-                                                <div class="text-muted">
-                                                    <small>{{ meals.snacks.Evening.calories }}</small>
-                                                </div>
-                                                {% endif %}
+                                                <h6 class="card-title"><i class="fas fa-moon me-2"></i>Dinner</h6>
+                                                <p class="mb-1"><strong>{{ meals.dinner.meal }}</strong></p>
+                                                <small class="text-muted">{{ meals.dinner.time }}</small>
                                             </div>
                                         </div>
                                     </div>
@@ -211,6 +260,20 @@
                     </div>
                 {% endif %}
             {% endfor %}
+        </div>
+        
+        <!-- Next Week Button -->
+        <div class="text-center mt-5">
+            {% if current_week < 4 %}
+                <a href="{{ url_for('diet_plan', week=current_week + 1) }}" class="btn btn-success btn-lg me-3">
+                    <i class="fas fa-arrow-right me-2"></i>Next Week (Week {{ current_week + 1 }})
+                </a>
+            {% endif %}
+            {% if current_week > 1 %}
+                <a href="{{ url_for('diet_plan', week=current_week - 1) }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-arrow-left me-2"></i>Previous Week
+                </a>
+            {% endif %}
         </div>
     </div>
 </section>
@@ -233,7 +296,7 @@
 
             <div class="col-md-4 mb-4">
                 <div class="card h-100 fade-in">
-                    <img src="{{ 'https://images.unsplash.com/photo-1544782321-8fab42cfd62e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'|safe }}" class="card-img-top" alt="Meal Timing" style="height: 200px; object-fit: cover;">
+                    <img src="https://images.pexels.com/photos/1556691/pexels-photo-1556691.jpeg?auto=compress&cs=tinysrgb&w=800&h=200&fit=crop" class="card-img-top" alt="Meal Timing" style="height: 200px; object-fit: cover;">
                     <div class="card-body text-center">
                         <i class="fas fa-clock feature-icon"></i>
                         <h4 class="card-title">Meal Timing</h4>
