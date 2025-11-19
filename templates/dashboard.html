@@ -23,7 +23,7 @@
                         <div class="rec-icon">🏃‍♂️</div>
                         <h5>Optimal Workout Time</h5>
                         <p>Your energy peaks at 6 PM. Schedule intense workouts then for 23% better performance.</p>
-                        <button class="btn-modern btn-sm" onclick="scheduleWorkout()">Schedule Now</button>
+                        <button class="btn-modern btn-sm" onclick="showWorkoutScheduler()">Schedule Now</button>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
@@ -31,7 +31,7 @@
                         <div class="rec-icon">🥗</div>
                         <h5>Nutrition Boost</h5>
                         <p>Add 15g more protein to reach your muscle-building goals. Try Greek yogurt or chicken.</p>
-                        <button class="btn-modern btn-sm" onclick="viewNutritionFoods()">View Foods</button>
+                        <button class="btn-modern btn-sm">View Foods</button>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
@@ -39,7 +39,7 @@
                         <div class="rec-icon">😴</div>
                         <h5>Recovery Alert</h5>
                         <p>Your sleep quality dropped 18%. Consider a rest day or light yoga session.</p>
-                        <button class="btn-modern btn-sm" onclick="showRestPlan()">Rest Plan</button>
+                        <button class="btn-modern btn-sm" onclick="generateRestPlanNow()">Generate Rest Plan</button>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                     <div class="action-icon">🏋️‍♂️</div>
                     <h5>Start Workout</h5>
                     <p>AI-guided session with real-time form correction</p>
-                    <a href="{{ url_for('workout_plan') }}" class="btn-modern w-100">Begin</a>
+                    <button class="btn-modern w-100" onclick="startAIWorkout()">Begin</button>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
@@ -225,5 +225,51 @@
 <script src="{{ url_for('static', filename='js/progress-dashboard.js') }}"></script>
 <script src="{{ url_for('static', filename='js/wearable-integration.js') }}"></script>
 <script src="{{ url_for('static', filename='js/social-challenges.js') }}"></script>
+
+<script>
+async function generateRestPlanNow() {
+    try {
+        const response = await fetch('/generate_rest_plan', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                intensity: 'medium',
+                goals: ['general_recovery'],
+                wake_time: '06:00',
+                sleep_time: '23:00'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            const plan = data.rest_plan;
+            alert(`✅ Rest Plan Generated!\n\n` +
+                  `💤 Sleep: ${plan.recommended_hours.daily_sleep_hours} hours (${plan.rest_schedule.find(b => b.type === 'sleep').start_time} - ${plan.rest_schedule.find(b => b.type === 'sleep').end_time})\n` +
+                  `🔄 Recovery: ${plan.recommended_hours.post_workout_recovery_minutes} min after workouts\n` +
+                  `🌙 Wind-down: ${plan.recommended_hours.wind_down_minutes} min before bed\n` +
+                  `⏸️ Micro-breaks: Every 2 hours (5 min each)\n\n` +
+                  `Total rest blocks: ${plan.rest_schedule.length}`);
+        } else {
+            alert('❌ Error: ' + (data.error || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('❌ Failed to generate rest plan: ' + error.message);
+    }
+}
+</script>
+
+<script>
+// Ensure functions are available globally
+window.showWorkoutScheduler = function() {
+    if (typeof workoutScheduler !== 'undefined') {
+        workoutScheduler.showScheduler();
+    } else {
+        console.error('Workout scheduler not loaded');
+    }
+};
+
+
+</script>
 
 {% endblock %}

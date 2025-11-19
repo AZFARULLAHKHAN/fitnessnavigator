@@ -7,120 +7,116 @@ from io import BytesIO
 import datetime
 
 def generate_grocery_list(diet_plan, user_data):
-    """Generate enhanced grocery list from diet plan with better categorization"""
+    """Generate comprehensive monthly grocery list based on personalized diet plan"""
+    
+    # Determine intensity level for quantities
+    intensity = user_data.get('intensity', 'intermediate')
+    food_preference = user_data.get('food_preference', 'non-veg')
+    
     grocery_items = {
-        '🥩 Proteins': {},
-        '🥬 Vegetables': {},
-        '🍎 Fruits': {},
-        '🌾 Grains & Cereals': {},
-        '🥛 Dairy & Alternatives': {},
-        '🥜 Nuts & Seeds': {},
-        '🧂 Condiments & Spices': {},
-        '🥤 Beverages': {},
-        '🍯 Others': {}
+        '🥚 PROTEIN SOURCES': {
+            'Eggs': '120 eggs (4 weeks avg – 3–4 per day)',
+            'Toor dal': '2 kg',
+            'Moong dal': '1.5 kg', 
+            'Masoor dal': '1 kg',
+            'Chole': '2 kg',
+            'Rajma': '1.5 kg',
+            'Sprouts (Moong + chana)': '1.5 kg (dry)'
+        },
+        '🌾 CARBS & GRAINS': {
+            'Wheat / Atta': '10–12 kg (all levels)',
+            'Oats': '2–4 kg',
+            'Bread (brown/whole wheat)': '8–12 packets/month',
+            'Poha': '2 kg',
+            'Sooji': '1.5 kg',
+            'Dalia': '2 kg',
+            'Khichdi (rice + dal mix)': '3–4 kg (optional)'
+        },
+        '🥜 HEALTHY FATS & NUTS': {
+            'Almonds': '1.5 kg',
+            'Peanuts': '2 kg',
+            'Roasted chana': '2 kg',
+            'Cashews': '500 g',
+            'Peanut Butter': '2–3 large jars',
+            'Olive oil': '1 L',
+            'Groundnut oil': '3–4 L',
+            'Sunflower oil': '3–4 L'
+        },
+        '🍅 VEGETABLES (Monthly)': {
+            'Spinach': '2–4 kg',
+            'Methi': '2 kg',
+            'Cabbage': '3–4 kg',
+            'Potatoes': '6 kg',
+            'Onions': '6–8 kg',
+            'Tomatoes': '6–7 kg',
+            'Carrots': '2–3 kg',
+            'Beans': '2–3 kg',
+            'Lauki / tinda': '3–4 kg',
+            'Cauliflower': '2–3 heads',
+            'Capsicum': '2.5–3 kg',
+            'Cucumber': '3–4 kg',
+            'Pumpkin': '1–2 kg',
+            'Lemon': '50 pcs',
+            'Ginger': '1 kg',
+            'Green chillies': '500 g'
+        },
+        '🍉 FRUITS (Weekly Purchase)': {
+            'Banana': '30–40 pcs',
+            'Apple': '15–20 pcs',
+            'Orange': '3–4 kg',
+            'Pomegranate': '2–3 kg',
+            'Pineapple': '2 pcs',
+            'Avocado': 'optional 6–8 pcs',
+            'Seasonal fruits': '3–4 kg/week'
+        },
+        '🥛 DAIRY': {
+            'Milk': '30–40 L/month',
+            'Curd': '10–15 kg/month',
+            'Paneer': 'Listed in protein sources',
+            'Buttermilk': '10–15 packets'
+        },
+        '🔥 SPICES & EXTRAS': {
+            'Salt, black salt': 'As needed',
+            'Turmeric': 'As needed',
+            'Chilli powder': 'As needed',
+            'Coriander powder': 'As needed',
+            'Jeera': 'As needed',
+            'Chia seeds': '1–2 kg',
+            'Honey': '1 large bottle',
+            'Coffee powder': '250–500 g',
+            'Tea': '500 g',
+            'Black pepper': 'As needed',
+            'Oregano': 'optional',
+            'Electrolyte powder': '2–3 packets'
+        },
+        '💧 HYDRATION': {
+            'Water bottles': 'if needed',
+            'Electrolytes': 'As needed',
+            'Coconut water': 'optional'
+        }
     }
     
-    # Track ingredients to avoid duplicates
-    ingredient_count = {}
+    # Add non-vegetarian items if applicable
+    if food_preference == 'non-veg':
+        grocery_items['🥚 PROTEIN SOURCES'].update({
+            'Chicken': f'{"4–5 kg total" if intensity == "intermediate" else "3–4 kg total" if intensity == "easy" else "5–6 kg total"}',
+            'Fish': '1.5–3 kg (optional depending on weekly plan)',
+            'Mutton': 'Optional'
+        })
     
-    # Extract ingredients from diet plan
-    for day, meals in diet_plan.items():
-        for meal_type, meal_info in meals.items():
-            if isinstance(meal_info, dict) and 'meal' in meal_info:
-                meal_text = meal_info['meal'].lower()
-                details = meal_info.get('details', '').lower()
-                full_text = f"{meal_text} {details}"
-            else:
-                full_text = str(meal_info).lower()
-            
-            # Enhanced protein categorization
-            if any(word in full_text for word in ['chicken', 'fish', 'egg', 'tofu', 'beef', 'turkey', 'salmon', 'tuna', 'shrimp', 'beans', 'lentils']):
-                if 'chicken' in full_text: grocery_items['🥩 Proteins']['Chicken breast (boneless)'] = '1.2 kg'
-                if any(word in full_text for word in ['fish', 'salmon']): grocery_items['🥩 Proteins']['Fresh fish fillets'] = '800g'
-                if 'egg' in full_text: grocery_items['🥩 Proteins']['Fresh eggs (large)'] = '18 pieces'
-                if 'tofu' in full_text: grocery_items['🥩 Proteins']['Firm tofu'] = '600g'
-                if 'beef' in full_text: grocery_items['🥩 Proteins']['Lean ground beef'] = '700g'
-                if 'turkey' in full_text: grocery_items['🥩 Proteins']['Turkey breast'] = '600g'
-                if 'tuna' in full_text: grocery_items['🥩 Proteins']['Canned tuna (in water)'] = '4 cans'
-                if 'shrimp' in full_text: grocery_items['🥩 Proteins']['Fresh shrimp'] = '500g'
-                if any(word in full_text for word in ['beans', 'chickpea', 'lentil']): 
-                    grocery_items['🥩 Proteins']['Mixed dried beans'] = '500g'
-                    grocery_items['🥩 Proteins']['Red lentils'] = '400g'
-            
-            # Enhanced vegetable categorization
-            vegetables_found = []
-            if 'spinach' in full_text: vegetables_found.append('Fresh spinach')
-            if 'broccoli' in full_text: vegetables_found.append('Fresh broccoli')
-            if 'carrot' in full_text: vegetables_found.append('Carrots')
-            if any(word in full_text for word in ['bell pepper', 'pepper']): vegetables_found.append('Bell peppers (mixed colors)')
-            if 'tomato' in full_text: vegetables_found.append('Fresh tomatoes')
-            if 'cucumber' in full_text: vegetables_found.append('Cucumbers')
-            if 'onion' in full_text: vegetables_found.append('Yellow onions')
-            if 'garlic' in full_text: vegetables_found.append('Fresh garlic')
-            if 'lettuce' in full_text: vegetables_found.append('Mixed lettuce')
-            if 'avocado' in full_text: vegetables_found.append('Ripe avocados')
-            if 'sweet potato' in full_text: vegetables_found.append('Sweet potatoes')
-            
-            if vegetables_found:
-                grocery_items['🥬 Vegetables']['Fresh spinach'] = '300g'
-                grocery_items['🥬 Vegetables']['Broccoli crowns'] = '2 pieces'
-                grocery_items['🥬 Vegetables']['Carrots'] = '1 kg'
-                grocery_items['🥬 Vegetables']['Bell peppers (assorted)'] = '6 pieces'
-                grocery_items['🥬 Vegetables']['Fresh tomatoes'] = '1.5 kg'
-                grocery_items['🥬 Vegetables']['Cucumbers'] = '4 pieces'
-                grocery_items['🥬 Vegetables']['Yellow onions'] = '1 kg'
-                grocery_items['🥬 Vegetables']['Fresh garlic'] = '2 bulbs'
-                grocery_items['🥬 Vegetables']['Mixed salad greens'] = '500g'
-            
-            # Enhanced fruit categorization
-            if any(word in full_text for word in ['apple', 'banana', 'berries', 'orange', 'fruit', 'lemon']):
-                grocery_items['🍎 Fruits']['Bananas'] = '2 bunches'
-                grocery_items['🍎 Fruits']['Apples (mixed varieties)'] = '1.5 kg'
-                grocery_items['🍎 Fruits']['Mixed berries (fresh/frozen)'] = '750g'
-                grocery_items['🍎 Fruits']['Oranges'] = '8 pieces'
-                grocery_items['🍎 Fruits']['Lemons'] = '4 pieces'
-            
-            # Enhanced grains categorization
-            if any(word in full_text for word in ['rice', 'oats', 'bread', 'quinoa', 'pasta']):
-                grocery_items['🌾 Grains & Cereals']['Brown rice'] = '1.5 kg'
-                grocery_items['🌾 Grains & Cereals']['Steel-cut oats'] = '750g'
-                grocery_items['🌾 Grains & Cereals']['Whole grain bread'] = '2 loaves'
-                if 'quinoa' in full_text: grocery_items['🌾 Grains & Cereals']['Organic quinoa'] = '600g'
-                if 'pasta' in full_text: grocery_items['🌾 Grains & Cereals']['Whole wheat pasta'] = '750g'
-            
-            # Enhanced dairy categorization
-            if any(word in full_text for word in ['milk', 'yogurt', 'cheese']):
-                grocery_items['🥛 Dairy & Alternatives']['Greek yogurt (plain)'] = '1.5 kg'
-                grocery_items['🥛 Dairy & Alternatives']['Low-fat milk'] = '2 liters'
-                if 'cheese' in full_text: grocery_items['🥛 Dairy & Alternatives']['Mozzarella cheese'] = '300g'
-                if 'almond' in full_text: grocery_items['🥛 Dairy & Alternatives']['Almond milk'] = '1 liter'
-            
-            # Nuts and seeds
-            if any(word in full_text for word in ['nuts', 'almond', 'walnut', 'seeds']):
-                grocery_items['🥜 Nuts & Seeds']['Mixed nuts (unsalted)'] = '400g'
-                grocery_items['🥜 Nuts & Seeds']['Chia seeds'] = '200g'
-                grocery_items['🥜 Nuts & Seeds']['Pumpkin seeds'] = '150g'
-            
-            # Condiments and spices
-            if any(word in full_text for word in ['oil', 'vinegar', 'spices', 'salt', 'pepper']):
-                grocery_items['🧂 Condiments & Spices']['Extra virgin olive oil'] = '750ml'
-                grocery_items['🧂 Condiments & Spices']['Balsamic vinegar'] = '250ml'
-                grocery_items['🧂 Condiments & Spices']['Sea salt'] = '1 container'
-                grocery_items['🧂 Condiments & Spices']['Black pepper (ground)'] = '1 container'
-                grocery_items['🧂 Condiments & Spices']['Mixed herbs & spices'] = 'As needed'
-            
-            # Beverages
-            if any(word in full_text for word in ['water', 'tea', 'coffee']):
-                grocery_items['🥤 Beverages']['Filtered water'] = '6 liters'
-                grocery_items['🥤 Beverages']['Green tea bags'] = '1 box'
-            
-            # Others
-            if any(word in full_text for word in ['honey', 'maple']):
-                grocery_items['🍯 Others']['Raw honey'] = '350g'
-                if 'maple' in full_text: grocery_items['🍯 Others']['Pure maple syrup'] = '250ml'
+    # Add paneer for vegetarians or intermediate non-veg
+    if food_preference == 'veg' or intensity == 'intermediate':
+        grocery_items['🥚 PROTEIN SOURCES']['Paneer'] = f'{"2.5 kg/month" if intensity == "intermediate" else "2 kg/month" if intensity == "easy" else "3 kg/month"}'
     
-    # Remove empty categories
-    return {k: v for k, v in grocery_items.items() if v}
+    # Adjust rice quantity based on intensity
+    rice_quantity = {
+        'easy': '5–6 kg',
+        'intermediate': '7–8 kg', 
+        'hardcore': '8–10 kg'
+    }
+    grocery_items['🌾 CARBS & GRAINS']['Rice'] = rice_quantity.get(intensity, '7–8 kg')
+    
+    return grocery_items
 
 
 def create_diet_pdf(user_data, diet_plan):
@@ -236,7 +232,8 @@ def create_grocery_pdf(grocery_list, user_data):
     # Title
     title_style = ParagraphStyle('CustomTitle', parent=styles['Heading1'], 
                                 fontSize=24, spaceAfter=30, textColor=colors.green)
-    story.append(Paragraph("🛒 Weekly Grocery List", title_style))
+    story.append(Paragraph("🛒 Monthly Grocery List", title_style))
+    story.append(Paragraph("Based on your personalized diet plan", styles['Normal']))
     story.append(Spacer(1, 20))
     
     # User info
@@ -244,7 +241,7 @@ def create_grocery_pdf(grocery_list, user_data):
     <b>Diet Plan for:</b> {user_data['gender'].title()}, {user_data['age']} years<br/>
     <b>Food Preference:</b> {user_data['food_preference'].title()}<br/>
     <b>Generated on:</b> {datetime.datetime.now().strftime('%B %d, %Y')}<br/>
-    <b>Valid for:</b> 7 days
+    <b>Valid for:</b> 1 month (4 weeks)
     """
     story.append(Paragraph(user_info, styles['Normal']))
     story.append(Spacer(1, 20))
@@ -254,12 +251,12 @@ def create_grocery_pdf(grocery_list, user_data):
         if items:  # Only show categories with items
             story.append(Paragraph(f"<b>{category}</b>", styles['Heading2']))
             
-            # Create table for items
-            data = [['Item', 'Quantity']]
+            # Create table for items with checkbox
+            data = [['Item', 'Quantity', '✓']]
             for item, quantity in items.items():
-                data.append([item, quantity])
+                data.append([item, quantity, '☐'])
             
-            table = Table(data, colWidths=[3*inch, 1.5*inch])
+            table = Table(data, colWidths=[2.5*inch, 1.5*inch, 0.5*inch])
             table.setStyle(TableStyle([
                 ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
                 ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
@@ -277,15 +274,21 @@ def create_grocery_pdf(grocery_list, user_data):
     # Shopping tips
     story.append(Paragraph("<b>Shopping Tips:</b>", styles['Heading2']))
     tips = [
-        "• Buy fresh vegetables and fruits for better nutrition",
-        "• Choose lean cuts of meat and fish",
-        "• Opt for whole grain products when possible",
+        "• Buy fresh vegetables and fruits weekly for better nutrition",
+        "• Purchase proteins in bulk and freeze portions",
+        "• Choose whole grain products when possible",
         "• Check expiry dates, especially for dairy products",
-        "• Consider buying in bulk for non-perishable items"
+        "• Buy dry goods (dals, rice, atta) in bulk to save money",
+        "• Store spices in airtight containers to maintain freshness",
+        "• Plan weekly vegetable shopping based on meal prep schedule"
     ]
     
     for tip in tips:
         story.append(Paragraph(tip, styles['Normal']))
+    
+    # Add note about quantities
+    story.append(Spacer(1, 15))
+    story.append(Paragraph("<b>Note:</b> Quantities are estimated for 4 weeks based on your diet plan and intensity level. Adjust according to your household size and consumption patterns.", styles['Normal']))
     
     doc.build(story)
     buffer.seek(0)
