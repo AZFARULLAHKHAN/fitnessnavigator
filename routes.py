@@ -569,6 +569,8 @@ def body_tracker():
 def challenges():
     return render_template('challenges.html', enable_chat=True)
 
+
+
 @app.route('/restore_session', methods=['POST'])
 def restore_session():
     try:

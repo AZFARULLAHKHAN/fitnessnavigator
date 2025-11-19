@@ -23,7 +23,7 @@
                         <div class="rec-icon">🏃‍♂️</div>
                         <h5>Optimal Workout Time</h5>
                         <p>Your energy peaks at 6 PM. Schedule intense workouts then for 23% better performance.</p>
-                        <button class="btn-modern btn-sm">Schedule Now</button>
+                        <button class="btn-modern btn-sm" onclick="scheduleWorkout()">Schedule Now</button>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
@@ -31,7 +31,7 @@
                         <div class="rec-icon">🥗</div>
                         <h5>Nutrition Boost</h5>
                         <p>Add 15g more protein to reach your muscle-building goals. Try Greek yogurt or chicken.</p>
-                        <button class="btn-modern btn-sm">View Foods</button>
+                        <button class="btn-modern btn-sm" onclick="viewNutritionFoods()">View Foods</button>
                     </div>
                 </div>
                 <div class="col-lg-4 col-md-6">
@@ -39,7 +39,7 @@
                         <div class="rec-icon">😴</div>
                         <h5>Recovery Alert</h5>
                         <p>Your sleep quality dropped 18%. Consider a rest day or light yoga session.</p>
-                        <button class="btn-modern btn-sm">Rest Plan</button>
+                        <button class="btn-modern btn-sm" onclick="showRestPlan()">Rest Plan</button>
                     </div>
                 </div>
             </div>
@@ -54,7 +54,7 @@
                     <div class="action-icon">🏋️‍♂️</div>
                     <h5>Start Workout</h5>
                     <p>AI-guided session with real-time form correction</p>
-                    <button class="btn-modern w-100" onclick="startAIWorkout()">Begin</button>
+                    <a href="{{ url_for('workout_plan') }}" class="btn-modern w-100">Begin</a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">

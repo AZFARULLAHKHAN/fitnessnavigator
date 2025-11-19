@@ -55,19 +55,19 @@ class DashboardIntegration {
                         <div class="rec-icon">🏃♂️</div>
                         <h5>Optimal Workout Time</h5>
                         <p>Your energy peaks at 6 PM. Schedule intense workouts then for 23% better performance.</p>
-                        <button class="btn-modern btn-sm">Schedule Now</button>
+                        <button class="btn-modern btn-sm" onclick="scheduleWorkout()">Schedule Now</button>
                     </div>
                     <div class="recommendation-card glass-card">
                         <div class="rec-icon">🥗</div>
                         <h5>Nutrition Boost</h5>
                         <p>Add 15g more protein to reach your muscle-building goals. Try Greek yogurt or chicken.</p>
-                        <button class="btn-modern btn-sm">View Foods</button>
+                        <button class="btn-modern btn-sm" onclick="viewNutritionFoods()">View Foods</button>
                     </div>
                     <div class="recommendation-card glass-card">
                         <div class="rec-icon">😴</div>
                         <h5>Recovery Alert</h5>
                         <p>Your sleep quality dropped 18%. Consider a rest day or light yoga session.</p>
-                        <button class="btn-modern btn-sm">Rest Plan</button>
+                        <button class="btn-modern btn-sm" onclick="showRestPlan()">Rest Plan</button>
                     </div>
                 </div>
             </div>
@@ -80,7 +80,7 @@ class DashboardIntegration {
                         <div class="action-icon">🏋️♂️</div>
                         <h5>Start Workout</h5>
                         <p>AI-guided session with real-time form correction</p>
-                        <button class="btn-modern w-100" onclick="startAIWorkout()">Begin</button>
+                        <a href="/workout_plan" class="btn-modern w-100">Begin</a>
                     </div>
                     <div class="action-card glass-card">
                         <div class="action-icon">📸</div>
@@ -169,11 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions
 function startAIWorkout() {
-    if (window.voiceCoach) {
-        voiceCoach.startWorkout();
-    } else {
-        alert('Voice coach is loading... Please try again in a moment.');
-    }
+    window.location.href = '/workout_plan';
 }
 
 function enableVoiceCoach() {
@@ -201,6 +197,111 @@ function showToast(message, type = 'info') {
         toast.classList.remove('show');
         setTimeout(() => document.body.removeChild(toast), 300);
     }, 4000);
+}
+
+// AI Recommendation Functions
+function scheduleWorkout() {
+    showToast('🏃♂️ Workout scheduled for 6 PM - Optimal energy time!', 'success');
+    // Add to calendar or schedule
+    console.log('Scheduling workout for 6 PM');
+}
+
+function viewNutritionFoods() {
+    showNutritionModal();
+}
+
+function showNutritionModal() {
+    const modalHTML = `
+        <div class="modal fade" id="nutritionModal" tabindex="-1">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content glass-card">
+                    <div class="modal-header">
+                        <h5 class="modal-title">🥗 High-Protein Foods & Supplements</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="nutrition-grid">
+                            <div class="nutrition-card">
+                                <div class="nutrition-icon">🥣</div>
+                                <h6>Muesli</h6>
+                                <p><strong>15g protein per 100g</strong></p>
+                                <p>Rich in fiber, vitamins, and minerals. Perfect for breakfast energy boost and sustained muscle recovery.</p>
+                                <span class="nutrition-tag">Breakfast</span>
+                            </div>
+                            <div class="nutrition-card">
+                                <div class="nutrition-icon">🥤</div>
+                                <h6>Whey Protein Isolate</h6>
+                                <p><strong>90g protein per 100g</strong></p>
+                                <p>Fast-absorbing protein for immediate post-workout muscle repair and growth. Low in carbs and fats.</p>
+                                <span class="nutrition-tag">Post-Workout</span>
+                            </div>
+                            <div class="nutrition-card">
+                                <div class="nutrition-icon">🥜</div>
+                                <h6>Greek Yogurt</h6>
+                                <p><strong>20g protein per cup</strong></p>
+                                <p>Contains casein protein for slow release. Rich in probiotics for gut health and calcium for bones.</p>
+                                <span class="nutrition-tag">Snack</span>
+                            </div>
+                            <div class="nutrition-card">
+                                <div class="nutrition-icon">🍗</div>
+                                <h6>Chicken Breast</h6>
+                                <p><strong>31g protein per 100g</strong></p>
+                                <p>Complete amino acid profile. Lean protein source for muscle building without excess calories.</p>
+                                <span class="nutrition-tag">Main Meal</span>
+                            </div>
+                            <div class="nutrition-card">
+                                <div class="nutrition-icon">🥚</div>
+                                <h6>Eggs</h6>
+                                <p><strong>13g protein per 2 eggs</strong></p>
+                                <p>Perfect amino acid score. Contains leucine for muscle protein synthesis and choline for brain health.</p>
+                                <span class="nutrition-tag">Anytime</span>
+                            </div>
+                            <div class="nutrition-card">
+                                <div class="nutrition-icon">🌱</div>
+                                <h6>Quinoa</h6>
+                                <p><strong>14g protein per cup</strong></p>
+                                <p>Complete plant protein with all 9 essential amino acids. High in fiber and complex carbs for energy.</p>
+                                <span class="nutrition-tag">Vegetarian</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-modern" data-bs-dismiss="modal">Got it!</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('nutritionModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('nutritionModal'));
+    modal.show();
+}
+
+function showRestPlan() {
+    showToast('😴 Rest day plan activated - Light yoga recommended', 'info');
+    // Show rest day activities
+    console.log('Showing rest plan');
+}
+
+function openGoalSetter() {
+    const modal = new bootstrap.Modal(document.getElementById('goalModal'));
+    modal.show();
+}
+
+function saveGoals() {
+    showToast('🎯 Goals saved successfully!', 'success');
+    const modal = bootstrap.Modal.getInstance(document.getElementById('goalModal'));
+    modal.hide();
 }
 
 // Add CSS for Dashboard Integration
@@ -490,7 +591,73 @@ input:checked + .toggle-slider:before {
     border-left: 4px solid #667eea;
 }
 
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.nutrition-card {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.nutrition-card:hover {
+    transform: translateY(-5px);
+    background: rgba(0, 0, 0, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+}
+
+.nutrition-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.nutrition-card h6 {
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.nutrition-card p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.nutrition-card strong {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.nutrition-tag {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.nutrition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
 @media (max-width: 768px) {
+    .nutrition-grid {
+        grid-template-columns: 1fr;
+    }
+    
     .dashboard-header {
         flex-direction: column;
         gap: 1rem;

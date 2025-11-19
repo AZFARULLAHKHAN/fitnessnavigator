@@ -1643,18 +1643,126 @@ def generate_workout_plan(gender, intensity):
     
     return workout_plan
 
+def get_muscle_group_image(focus):
+    """Get muscle group specific image URL"""
+    image_map = {
+        "Chest": "https://via.placeholder.com/1920x200/FF6B6B/ffffff?text=CHEST+WORKOUT",
+        "Biceps": "https://via.placeholder.com/1920x200/4ECDC4/ffffff?text=BICEPS+WORKOUT",
+        "Back": "https://via.placeholder.com/1920x200/45B7D1/ffffff?text=BACK+WORKOUT",
+        "Triceps": "https://via.placeholder.com/1920x200/F7DC6F/000000?text=TRICEPS+WORKOUT",
+        "Legs": "https://via.placeholder.com/1920x200/BB8FCE/ffffff?text=LEGS+WORKOUT",
+        "Full Body": "https://via.placeholder.com/1920x200/58D68D/ffffff?text=FULL+BODY+WORKOUT",
+        "Full Body Power": "https://via.placeholder.com/1920x200/58D68D/ffffff?text=FULL+BODY+POWER",
+        "Cardio": "https://via.placeholder.com/1920x200/F1948A/ffffff?text=CARDIO+WORKOUT",
+        "Active Recovery": "https://via.placeholder.com/1920x200/85C1E9/ffffff?text=ACTIVE+RECOVERY",
+        "Rest and Recovery": "https://via.placeholder.com/1920x200/85C1E9/ffffff?text=REST+RECOVERY",
+        "Back & Triceps": "https://via.placeholder.com/1920x200/45B7D1/ffffff?text=BACK+TRICEPS"
+    }
+    return image_map.get(focus, "https://via.placeholder.com/1920x200/007bff/ffffff?text=WORKOUT")
+
 def get_exercise_video_url(name):
     video_map = {
+        # Warm up
+        "Warm up": "https://www.youtube.com/embed/xY9ZNWSziu8?si=lebIU5t4L9tEMk0J",
+        "Light stretching": "https://www.youtube.com/embed/xY9ZNWSziu8?si=lebIU5t4L9tEMk0J",
+        
         # Push variations
-        "Push-ups": "https://youtu.be/mECzqUIDWfU?si=lj2k_FLbfe2iuBVD",  
-        "Diamond Push-ups": "https://www.youtube.com/embed/dYhQ05pUB0A?si=aRM1Idmspq3tauME",  
-        "Pike Push-ups": "https://www.youtube.com/embed/XckEEwa1BPI?si=d-Tny65kI-Pc5PeY",  # Calisthenicmovement
-        "Dips": "https://www.youtube.com/embed/rZl4D4p_nO4?si=EKkImmMjUla85XYD",  # Calisthenicmovement
-        "Wall Push-ups": "https://www.youtube.com/embed/EOf3cGIQpA4?si=0ymERtKh0TBii--y",  # HASfit
-        "Modified Push-ups": "https://www.youtube.com/embed/GnjOtan1wZ0?si=VxecbT1cxZeInUMh",  # HASfit
-        "Push-ups (regular or modified)": "https://www.youtube.com/embed/WDIpL0pjun0?si=gYvrtr1JQHoTXNsk",  # MadFit
-        "Clap Push-ups": "https://www.youtube.com/embed/EYwWCgM198U?si=SyXGdfTyN_REN8Fn",  # Calisthenicmovement
-        "Explosive Push-ups": "https://www.youtube.com/embed/_ICD84Bde4M?si=ZJp5KYNZGFbfQ4HP",  # MadFit
+        "Push-ups": "https://www.youtube.com/embed/v9LABVJzv8A?si=-bdwjcujMV32QWka",
+        "Push-ups (regular or modified)": "https://www.youtube.com/embed/v9LABVJzv8A?si=-bdwjcujMV32QWka",
+        "Push-ups (modified)": "https://www.youtube.com/embed/v9LABVJzv8A?si=-bdwjcujMV32QWka",
+        "Modified Push-ups": "https://www.youtube.com/embed/v9LABVJzv8A?si=-bdwjcujMV32QWka",
+        
+        # Chest exercises
+        "Flat bench press": "https://www.youtube.com/embed/VmB1G1K7v94?si=l4Ye8bQKv4RL28xR",
+        "Flat bench": "https://www.youtube.com/embed/VmB1G1K7v94?si=l4Ye8bQKv4RL28xR",
+        "Incline dumbbell press": "https://www.youtube.com/embed/hChjZQhX1Ls?si=MUktTpjMSXnpZUUW",
+        "Incline dumbbell flies": "https://www.youtube.com/embed/JSDpq14vCZ8?si=qIfmtEtKm0jkUkrF",
+        "Incline dumbbell flyes": "https://www.youtube.com/embed/JSDpq14vCZ8?si=qIfmtEtKm0jkUkrF",
+        "Cable flies": "https://www.youtube.com/embed/8Um35Es-ROE?si=BBHOVkTNGywEvWWg",
+        "Cable flyes": "https://www.youtube.com/embed/8Um35Es-ROE?si=BBHOVkTNGywEvWWg",
+        "Upper cable flies": "https://www.youtube.com/embed/eQ_NBB6OBH4?si=wjHkezklni6sROOf",
+        "Upper cable flyes": "https://www.youtube.com/embed/eQ_NBB6OBH4?si=wjHkezklni6sROOf",
+        "Butterfly chest dips": "https://www.youtube.com/embed/4la6BkUBLgo?si=dGAD2p-Dnlrf169p",
+        "Chest dips": "https://www.youtube.com/embed/4la6BkUBLgo?si=dGAD2p-Dnlrf169p",
+        "Incline bench press": "https://www.youtube.com/embed/8iPEnn-ltC8?si=AEWkpGjQTSVveCWg",
+        "Incline bench": "https://www.youtube.com/embed/8iPEnn-ltC8?si=AEWkpGjQTSVveCWg",
+        "Incline press": "https://www.youtube.com/embed/8iPEnn-ltC8?si=AEWkpGjQTSVveCWg",
+        
+        # Keep existing exercises
+        "Diamond Push-ups": "https://www.youtube.com/embed/dYhQ05pUB0A?si=aRM1Idmspq3tauME",
+        "Pike Push-ups": "https://www.youtube.com/embed/XckEEwa1BPI?si=d-Tny65kI-Pc5PeY",
+        "Dips": "https://www.youtube.com/embed/rZl4D4p_nO4?si=EKkImmMjUla85XYD",
+        "Wall Push-ups": "https://www.youtube.com/embed/EOf3cGIQpA4?si=0ymERtKh0TBii--y",
+        "Clap Push-ups": "https://www.youtube.com/embed/EYwWCgM198U?si=SyXGdfTyN_REN8Fn",
+        "Explosive Push-ups": "https://www.youtube.com/embed/_ICD84Bde4M?si=ZJp5KYNZGFbfQ4HP",
+        
+        # Back exercises
+        "Bent over flies": "https://www.youtube.com/embed/GxVenNOYuo0?si=ZKHEZ8eIncQW36dp",
+        "Bend over": "https://www.youtube.com/embed/GxVenNOYuo0?si=ZKHEZ8eIncQW36dp",
+        "Butterfly dumbbell": "https://www.youtube.com/embed/YhIrOOsL4bA?si=BUmGzVrdpQHHcq0-",
+        "Pull-ups": "https://www.youtube.com/embed/p40iUjf02j0?si=Aj1VY2_TNxbjbeiD",
+        "Pull-ups/Assisted pull-ups": "https://www.youtube.com/embed/p40iUjf02j0?si=Aj1VY2_TNxbjbeiD",
+        "Assisted pull-ups": "https://www.youtube.com/embed/p40iUjf02j0?si=Aj1VY2_TNxbjbeiD",
+        "Lat pulldowns": "https://www.youtube.com/embed/WQasM7Jh9dQ?si=0WuND3d1SEosQto4",
+        "Lats front": "https://www.youtube.com/embed/WQasM7Jh9dQ?si=0WuND3d1SEosQto4",
+        
+        # Bicep exercises
+        "Bicep Curls": "https://www.youtube.com/embed/JyV7mUFSpXs?si=Kcl6c2mnwcejOpOf",
+        "Bicep dumbbell": "https://www.youtube.com/embed/JyV7mUFSpXs?si=Kcl6c2mnwcejOpOf",
+        "Bicep rod": "https://www.youtube.com/embed/kwG2ipFRgfo?si=6jEVVh2FAhupCAPJ",
+        "Cable curls": "https://www.youtube.com/embed/UsaY33N4KEw?si=zXCLN_Gcyq5iInTr",
+        "Cable curl": "https://www.youtube.com/embed/UsaY33N4KEw?si=zXCLN_Gcyq5iInTr",
+        "Hammer Curls": "https://www.youtube.com/embed/BRVDS6HVR9Q?si=TW3WYtH3Fu2xYcjb",
+        "Hammer curls": "https://www.youtube.com/embed/BRVDS6HVR9Q?si=TW3WYtH3Fu2xYcjb",
+        "Hammer": "https://www.youtube.com/embed/BRVDS6HVR9Q?si=TW3WYtH3Fu2xYcjb",
+        "Zig zag bar curls": "https://www.youtube.com/embed/6LrOTcr595A?si=sRLQgrVMjYTwmXC5",
+        "Zig zag": "https://www.youtube.com/embed/6LrOTcr595A?si=sRLQgrVMjYTwmXC5",
+        "Cable handle curls": "https://www.youtube.com/embed/NFzTWp2qpiE?si=Ju-KnjgwY7JWH0q0",
+        "Cable handle": "https://www.youtube.com/embed/NFzTWp2qpiE?si=Ju-KnjgwY7JWH0q0",
+        
+        # Tricep exercises
+        "Back triceps": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        "Back tricep": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        "Straight rod lying tricep extension": "https://www.youtube.com/embed/xFTF_wErf9o?si=glJyJuKDGa55o77Q",
+        "Lying straight bar extension": "https://www.youtube.com/embed/xFTF_wErf9o?si=glJyJuKDGa55o77Q",
+        "Single hand dumbbell tricep extension": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        "Zig zag rod incline bench press": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        "Cable reverse extension": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        "Rope overhead extension": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        "Back dips": "https://www.youtube.com/embed/ddOdLz3K5LU?si=2E-oFi6ayLhJuaV8",
+        
+        # Additional exercises
+        "Flat dumbbell press": "https://www.youtube.com/embed/VmB1G1K7v94?si=l4Ye8bQKv4RL28xR",
+        "Pec deck": "https://www.youtube.com/embed/4la6BkUBLgo?si=dGAD2p-Dnlrf169p",
+        "Free weight squats": "https://www.youtube.com/embed/YaXPRqUwItQ?si=FIM0Mi-lNbfdrwsC",
+        "Full squats": "https://www.youtube.com/embed/ec1a6PpEKrQ?si=hvYhLcGxOjtWu2Pc",
+        "Leg press": "https://www.youtube.com/embed/yZmx_Ac3880?si=i6Si4uUtofLaEeZD",
+        "Crunches": "https://www.youtube.com/embed/MKmrqcoCZ-M?si=Pba3VK7U8o27ATkl",
+        "Frog jumps": "https://www.youtube.com/embed/SPxvbluj6vQ?si=8SiFKNiNIrAfKg8b",
+        "Brisk walking": "https://www.youtube.com/embed/nmvVfgrExAg?si=ULj0SaHgCgfqSyzr",
+        "Light walking": "https://www.youtube.com/embed/nmvVfgrExAg?si=ULj0SaHgCgfqSyzr",
+        "Walking": "https://www.youtube.com/embed/nmvVfgrExAg?si=ULj0SaHgCgfqSyzr",
+        "Reverse lats": "https://www.youtube.com/embed/SNiwpA13ZLU?si=Pi0hoXuDcpGKsRR9",
+        "Mid back machine": "https://www.youtube.com/embed/RPxM76cp0Y8?si=q5gCKqFN636EbxQm",
+        "Side dumbbell": "https://www.youtube.com/embed/XPPfnSEATJA?si=jcoRZznaDaniRTJ8",
+        "Barbell rowing": "https://www.youtube.com/embed/T3N-TO4reLQ?si=VOuHuU5xz7X0hih5",
+        "Front lat pulldown": "https://www.youtube.com/embed/SALxEARiMkw?si=WQB2jk7WD6esfmbi",
+        "T-bar rows": "https://www.youtube.com/embed/hYo72r8Ivso?si=RdPMA6xvJNTqjKD6",
+        "T bar": "https://www.youtube.com/embed/hYo72r8Ivso?si=RdPMA6xvJNTqjKD6",
+        "Close grip pulldowns": "https://www.youtube.com/embed/IjoFCmLX7z0?si=3GD5W8BaNCwK0Wey",
+        "Close grip lat pulldown": "https://www.youtube.com/embed/IjoFCmLX7z0?si=3GD5W8BaNCwK0Wey",
+        "Side dumbbell rowing": "https://www.youtube.com/embed/5PoEksoJNaw?si=kx_eIVsEElQhuaZx",
+        "Single dumbbell rowing": "https://www.youtube.com/embed/5PoEksoJNaw?si=kx_eIVsEElQhuaZx",
+        "Weight squats": "https://www.youtube.com/embed/v_c67Omje48?si=dnTRJ4NZ6iBwSUsA",
+        "Weighted lunges": "https://www.youtube.com/embed/Pbmj6xPo-Hw?si=-HV_Q98sRsKItQum",
+        "Walking lunges": "https://www.youtube.com/embed/Pbmj6xPo-Hw?si=-HV_Q98sRsKItQum",
+        "Hamstring leg press": "https://www.youtube.com/embed/tvS_kTb7nCE?si=aGHXj-FgG0lZ12qn",
+        "Calf machine leg raises": "https://www.youtube.com/embed/KxEYX_cuesM?si=PRYi8eeskrY1YknM",
+        "Reverse leg extension": "https://www.youtube.com/embed/oB3X0T0TG3E?si=_qYadzpvmjFFRT7E",
+        "Reverse extension": "https://www.youtube.com/embed/oB3X0T0TG3E?si=_qYadzpvmjFFRT7E",
+        "High intensity circuit": "https://www.youtube.com/watch?v=ml6cT4AZdqI",
+        "HIIT cardio": "https://www.youtube.com/watch?v=ml6cT4AZdqI",
+        "Cardio": "https://www.youtube.com/watch?v=ml6cT4AZdqI",
 
         # Squats, lunges, legs
         "Bodyweight Squats": "https://www.youtube.com/embed/eCnvnpG0TPs?si=zuGx4uNs2UXm0wzM",  # ScottHermanFitness
@@ -1669,7 +1777,8 @@ def get_exercise_video_url(name):
         "Planks": "https://www.youtube.com/embed/pvIjsG5Svck?si=O7KMftacLJaKgiWJ",  # Bowflex
         "Bicycle Crunches": "https://www.youtube.com/embed/TnWmPVYu1uw?si=89J0BHvFWiyfFJTW",  # Bowflex
         "Russian Twists": "https://www.youtube.com/embed/DJQGX2J4IVw?si=Uz-79Qcb46KyBfd6",  # Bowflex
-        "Leg Raises": "https://www.youtube.com/embed/JB2oyawG9KI?si=5OlWnikPKrrXZxpV",  # Bowflex
+        "Leg Raises": "https://www.youtube.com/embed/U4L_6JEv9Jg?si=ohd5vRklLivIOHJd",
+        "Leg raises": "https://www.youtube.com/embed/U4L_6JEv9Jg?si=ohd5vRklLivIOHJd",
 
         # Back, arms, shoulders
         "Dumbbell Rows": "https://www.youtube.com/embed/jE43OmnBgLI?si=N9J77UB1bQqdobgy",  # ScottHermanFitness
@@ -1724,122 +1833,123 @@ def generate_daily_workout(day, gender, intensity, week):
             "notes": "Allow your body to recover. Stay hydrated and get adequate sleep."
         }
     else:
-        # Easy intensity workouts
+        # Beginner intensity workouts
         if intensity == "easy":
             workout_plans = {
                 "male": {
                     "Monday": {
-                        "focus": "Full Body",
+                        "focus": "Chest",
                         "exercises": [
-                            {"name": "Walking", "details": "20 minutes at moderate pace"},
-                            {"name": "Bodyweight Squats", "details": "2 sets of 10 reps"},
-                            {"name": "Wall Push-ups", "details": "2 sets of 8 reps"},
-                            {"name": "Standing Side Leg Raises", "details": "2 sets of 10 each side"}
+                            {"name": "Push-ups", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Flat bench press", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Flat dumbbell press", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Incline dumbbell flies", "details": "2-3 sets of 8-10 reps"}
                         ],
-                        "notes": "Focus on proper form and breathing. Rest as needed between exercises."
+                        "notes": "Focus on proper form. Start with warm-up and stretching."
                     },
                     "Tuesday": {
-                        "focus": "Walking & Stretching",
+                        "focus": "Back & Triceps",
                         "exercises": [
-                            {"name": "Brisk Walking", "details": "25 minutes"},
-                            {"name": "Standing Side Bends", "details": "2 sets of 10 each side"},
-                            {"name": "Shoulder Rolls", "details": "2 sets of 10 forward and backward"}
+                            {"name": "Pull-ups", "details": "2-3 sets of 5-8 reps"},
+                            {"name": "Lat pulldowns", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Cable rowing", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Straight rod lying tricep extension", "details": "2-3 sets of 8-10 reps"}
                         ],
-                        "notes": "Take deep breaths during stretches and hold each position for 15-20 seconds."
+                        "notes": "Focus on controlled movements and proper form."
                     },
                     "Wednesday": {
-                        "focus": "Upper Body",
+                        "focus": "Legs",
                         "exercises": [
-                            {"name": "Push-ups", "details": "3 sets of 12 reps"},
-                            {"name": "Diamond Push-ups", "details": "2 sets of 10 reps"},
-                            {"name": "Pike Push-ups", "details": "2 sets of 8 reps"},
-                            {"name": "Dips", "details": "3 sets of 10 reps"}
+                            {"name": "Free weight squats", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Leg press", "details": "2-3 sets of 10-12 reps"},
+                            {"name": "Leg raises", "details": "2-3 sets of 10-12 reps"},
+                            {"name": "Crunches", "details": "2-3 sets of 10-15 reps"}
                         ],
-                        "notes": "Rest 60-90 seconds between sets. Focus on controlled movements."
+                        "notes": "Start with bodyweight movements before adding weights."
                     },
                     "Thursday": {
                         "focus": "Active Recovery",
                         "exercises": [
-                            {"name": "Yoga", "details": "Beginner's yoga routine, 15-20 minutes"},
-                            {"name": "Stretching", "details": "Full body stretching, 10 minutes"}
+                            {"name": "Light stretching", "details": "15-20 minutes"},
+                            {"name": "Walking", "details": "20-30 minutes"}
                         ],
-                        "notes": "Focus on flexibility and recovery."
+                        "notes": "Focus on recovery and flexibility."
                     },
                     "Friday": {
                         "focus": "Full Body",
                         "exercises": [
                             {"name": "Push-ups", "details": "2 sets of 8-10 reps"},
-                            {"name": "Bodyweight Squats", "details": "2 sets of 12 reps"},
+                            {"name": "Bodyweight squats", "details": "2 sets of 10-12 reps"},
                             {"name": "Planks", "details": "2 sets of 20-30 seconds"},
-                            {"name": "Walking Lunges", "details": "2 sets of 10 steps per leg"}
+                            {"name": "Frog jumps", "details": "2 sets of 5-8 reps"}
                         ],
-                        "notes": "Perform exercises as a circuit with minimal rest between exercises."
+                        "notes": "Light full body workout to end the week."
                     },
                     "Saturday": {
-                        "focus": "Cardio & Core",
+                        "focus": "Cardio",
                         "exercises": [
-                            {"name": "Brisk Walking or Light Jogging", "details": "20 minutes"},
-                            {"name": "Bicycle Crunches", "details": "2 sets of 10 reps per side"},
-                            {"name": "Planks", "details": "2 sets of 20-30 seconds"}
+                            {"name": "Brisk walking", "details": "20-30 minutes"},
+                            {"name": "Light stretching", "details": "10 minutes"}
                         ],
-                        "notes": "Focus on maintaining good form throughout."
+                        "notes": "Low intensity cardio and recovery."
                     }
                 },
                 "female": {
                     "Monday": {
-                        "focus": "Full Body",
+                        "focus": "Chest",
                         "exercises": [
-                            {"name": "Walking", "details": "20 minutes at moderate pace"},
-                            {"name": "Modified Push-ups", "details": "2 sets of 8 reps"},
-                            {"name": "Bodyweight Squats", "details": "2 sets of 10 reps"},
-                            {"name": "Standing Side Leg Raises", "details": "2 sets of 10 each side"}
+                            {"name": "Push-ups (modified)", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Flat dumbbell press", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Incline dumbbell flies", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Pec deck", "details": "2-3 sets of 8-10 reps"}
                         ],
-                        "notes": "Remember to maintain proper form throughout the exercises."
+                        "notes": "Start with warm-up and focus on form over weight."
                     },
                     "Tuesday": {
-                        "focus": "Walking & Stretching",
+                        "focus": "Back & Triceps",
                         "exercises": [
-                            {"name": "Brisk Walking", "details": "25 minutes"},
-                            {"name": "Standing Side Bends", "details": "2 sets of 10 each side"},
-                            {"name": "Shoulder Rolls", "details": "2 sets of 10 forward and backward"}
+                            {"name": "Assisted pull-ups", "details": "2-3 sets of 5-8 reps"},
+                            {"name": "Lat pulldowns", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Cable rowing", "details": "2-3 sets of 8-10 reps"},
+                            {"name": "Single hand dumbbell tricep extension", "details": "2-3 sets of 8-10 reps"}
                         ],
-                        "notes": "Take deep breaths during stretches and hold each position for 15-20 seconds."
+                        "notes": "Use lighter weights and focus on muscle activation."
                     },
                     "Wednesday": {
-                        "focus": "Upper Body",
+                        "focus": "Legs",
                         "exercises": [
-                            {"name": "Push-ups (regular or modified)", "details": "3 sets of 12 reps"},
-                            {"name": "Dumbbell Rows", "details": "3 sets of 12 reps per arm"},
-                            {"name": "Tricep Dips", "details": "3 sets of 8-10 reps"},
-                            {"name": "Planks", "details": "3 sets of 20-30 seconds"}
+                            {"name": "Bodyweight squats", "details": "2-3 sets of 10-12 reps"},
+                            {"name": "Leg press", "details": "2-3 sets of 10-12 reps"},
+                            {"name": "Leg raises", "details": "2-3 sets of 10-12 reps"},
+                            {"name": "Crunches", "details": "2-3 sets of 10-15 reps"}
                         ],
-                        "notes": "Use light weights or household items if dumbbells are not available."
+                        "notes": "Focus on proper squat form and core engagement."
                     },
                     "Thursday": {
                         "focus": "Active Recovery",
                         "exercises": [
-                            {"name": "Yoga", "details": "Beginner's yoga routine, 15-20 minutes"},
-                            {"name": "Stretching", "details": "Full body stretching, 10 minutes"}
+                            {"name": "Yoga", "details": "15-20 minutes"},
+                            {"name": "Light walking", "details": "20 minutes"}
                         ],
                         "notes": "Focus on flexibility and recovery."
                     },
                     "Friday": {
                         "focus": "Full Body",
                         "exercises": [
-                            {"name": "Circuit Training", "details": "3 rounds of: 12 squats, 10 push-ups, 12 lunges per leg, 10 dumbbell rows per arm, 30-second plank"},
-                            {"name": "Burpees", "details": "3 sets of 10 reps"}
+                            {"name": "Modified push-ups", "details": "2 sets of 8-10 reps"},
+                            {"name": "Bodyweight squats", "details": "2 sets of 10-12 reps"},
+                            {"name": "Planks", "details": "2 sets of 20-30 seconds"},
+                            {"name": "Glute bridges", "details": "2 sets of 10-12 reps"}
                         ],
-                        "notes": "Perform the circuit with minimal rest between exercises, rest 1-2 minutes between rounds."
+                        "notes": "Light full body workout focusing on form."
                     },
                     "Saturday": {
-                        "focus": "Cardio & Mobility",
+                        "focus": "Cardio",
                         "exercises": [
-                            {"name": "Brisk Walking", "details": "20 minutes"},
-                            {"name": "Arm Circles", "details": "2 sets of 10 in each direction"},
-                            {"name": "Hip Circles", "details": "2 sets of 10 in each direction"},
-                            {"name": "Cat-Cow Stretch", "details": "10 repetitions"}
+                            {"name": "Brisk walking", "details": "20-30 minutes"},
+                            {"name": "Stretching", "details": "10-15 minutes"}
                         ],
-                        "notes": "Focus on loosening tight areas and improving mobility."
+                        "notes": "Low intensity cardio and flexibility work."
                     }
                 }
             }
@@ -1848,241 +1958,279 @@ def generate_daily_workout(day, gender, intensity, week):
             workout_plans = {
                 "male": {
                     "Monday": {
-                        "focus": "Chest & Triceps",
+                        "focus": "Chest",
                         "exercises": [
-                            {"name": "Push-ups", "details": "3 sets of 12 reps"},
-                            {"name": "Diamond Push-ups", "details": "2 sets of 10 reps"},
-                            {"name": "Pike Push-ups", "details": "2 sets of 8 reps"},
-                            {"name": "Dips", "details": "3 sets of 10 reps"}
+                            {"name": "Flat bench press", "details": "3-4 sets of 8-12 reps"},
+                            {"name": "Cable flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Incline dumbbell flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Upper cable flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Butterfly chest dips", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Incline bench press", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Bent over flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Butterfly dumbbell", "details": "3-4 sets of 10-12 reps"}
                         ],
-                        "notes": "Rest 60-90 seconds between sets. Focus on controlled movements."
+                        "notes": "Focus on progressive overload and proper form."
                     },
                     "Tuesday": {
-                        "focus": "Cardio & Core",
+                        "focus": "Biceps",
                         "exercises": [
-                            {"name": "Jogging or Cycling", "details": "25 minutes"},
-                            {"name": "Planks", "details": "3 sets of 40-60 seconds"},
-                            {"name": "Russian Twists", "details": "3 sets of 15 reps per side"},
-                            {"name": "Mountain Climbers", "details": "3 sets of 20 reps per leg"}
+                            {"name": "Zig zag bar curls", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Hammer curls", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable curls", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable handle curls", "details": "3-4 sets of 10-12 reps"}
                         ],
-                        "notes": "Maintain moderate intensity throughout your cardio session."
+                        "notes": "Focus on controlled movements and muscle contraction."
                     },
                     "Wednesday": {
-                        "focus": "Back & Biceps",
+                        "focus": "Back",
                         "exercises": [
-                            {"name": "Dumbbell Rows", "details": "3 sets of 12 reps per arm"},
-                            {"name": "Superman Holds", "details": "3 sets of 30 seconds"},
-                            {"name": "Bicep Curls", "details": "3 sets of 12 reps"},
-                            {"name": "Hammer Curls", "details": "3 sets of 12 reps"}
+                            {"name": "Pull-ups", "details": "3-4 sets of 8-12 reps"},
+                            {"name": "Barbell rowing", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Lat pulldowns", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "T-bar rows", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Close grip pulldowns", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable rowing", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Single dumbbell rowing", "details": "3-4 sets of 10-12 reps each arm"}
                         ],
-                        "notes": "Use challenging weights but maintain proper form."
+                        "notes": "Focus on back width and thickness development."
                     },
                     "Thursday": {
-                        "focus": "HIIT & Mobility",
+                        "focus": "Triceps",
                         "exercises": [
-                            {"name": "HIIT Circuit", "details": "30 seconds work, 30 seconds rest for 15 minutes (Jumping jacks, Mountain climbers, High knees, Burpees)"},
-                            {"name": "Foam Rolling", "details": "10 minutes focusing on tight areas"},
-                            {"name": "Dynamic Stretching", "details": "5-10 minutes"}
+                            {"name": "Zig zag rod incline bench press", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable reverse extension", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Rope overhead extension", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Back dips", "details": "3-4 sets of 8-12 reps"}
                         ],
-                        "notes": "Push yourself during the work intervals, fully recover during rest periods."
+                        "notes": "Focus on tricep isolation and strength building."
                     },
                     "Friday": {
-                        "focus": "Legs & Shoulders",
+                        "focus": "Legs",
                         "exercises": [
-                            {"name": "Bodyweight Squats", "details": "3 sets of 15 reps"},
-                            {"name": "Walking Lunges", "details": "3 sets of 12 reps per leg"},
-                            {"name": "Shoulder Press", "details": "3 sets of 12 reps"},
-                            {"name": "Lateral Raises", "details": "3 sets of 12 reps"}
+                            {"name": "Weight squats", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Weighted lunges", "details": "3-4 sets of 10-12 reps each leg"},
+                            {"name": "Hamstring leg press", "details": "3-4 sets of 12-15 reps"},
+                            {"name": "Calf machine leg raises", "details": "3-4 sets of 12-15 reps"},
+                            {"name": "Reverse leg extension", "details": "3-4 sets of 12-15 reps"}
                         ],
-                        "notes": "Focus on form and controlled movements."
+                        "notes": "Focus on compound movements and progressive overload."
                     },
                     "Saturday": {
-                        "focus": "Full Body & Cardio",
+                        "focus": "Full Body",
                         "exercises": [
-                            {"name": "Circuit Training", "details": "3 rounds of: 15 push-ups, 15 bodyweight squats, 15 dumbbell rows, 15 lunges, 30-second plank"},
-                            {"name": "Brisk Walking or Jogging", "details": "15 minutes"}
+                            {"name": "Circuit training", "details": "3 rounds of mixed exercises"},
+                            {"name": "Cardio", "details": "20-30 minutes moderate intensity"}
                         ],
-                        "notes": "Perform the circuit with minimal rest between exercises, rest 1-2 minutes between rounds."
+                        "notes": "Combine strength and cardio for overall fitness."
                     }
                 },
                 "female": {
                     "Monday": {
-                        "focus": "Lower Body",
+                        "focus": "Chest",
                         "exercises": [
-                            {"name": "Bodyweight Squats", "details": "3 sets of 15 reps"},
-                            {"name": "Lunges", "details": "3 sets of 12 reps per leg"},
-                            {"name": "Glute Bridges", "details": "3 sets of 15 reps"},
-                            {"name": "Calf Raises", "details": "3 sets of 15 reps"}
+                            {"name": "Flat bench press", "details": "3-4 sets of 8-12 reps"},
+                            {"name": "Cable flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Incline dumbbell flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Upper cable flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Butterfly chest dips", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Incline bench press", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Bent over flies", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Butterfly dumbbell", "details": "3-4 sets of 10-12 reps"}
                         ],
-                        "notes": "Focus on form and controlled movements."
+                        "notes": "Use moderate weights and focus on muscle activation."
                     },
                     "Tuesday": {
-                        "focus": "Cardio & Core",
+                        "focus": "Biceps",
                         "exercises": [
-                            {"name": "Jogging, Cycling, or Dance", "details": "25 minutes"},
-                            {"name": "Planks", "details": "3 sets of 40-60 seconds"},
-                            {"name": "Bicycle Crunches", "details": "3 sets of 15 reps per side"},
-                            {"name": "Leg Raises", "details": "3 sets of 12 reps"}
+                            {"name": "Zig zag bar curls", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Hammer curls", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable curls", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable handle curls", "details": "3-4 sets of 10-12 reps"}
                         ],
-                        "notes": "Maintain moderate intensity throughout your cardio session."
+                        "notes": "Focus on controlled movements and proper form."
                     },
                     "Wednesday": {
-                        "focus": "Upper Body",
+                        "focus": "Back",
                         "exercises": [
-                            {"name": "Push-ups (regular or modified)", "details": "3 sets of 12 reps"},
-                            {"name": "Dumbbell Rows", "details": "3 sets of 12 reps per arm"},
-                            {"name": "Tricep Dips", "details": "3 sets of 12 reps"},
-                            {"name": "Shoulder Press", "details": "3 sets of 12 reps"}
+                            {"name": "Assisted pull-ups", "details": "3-4 sets of 8-12 reps"},
+                            {"name": "Barbell rowing", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Lat pulldowns", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "T-bar rows", "details": "3-4 sets of 8-10 reps"},
+                            {"name": "Close grip pulldowns", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable rowing", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Single dumbbell rowing", "details": "3-4 sets of 10-12 reps each arm"}
                         ],
-                        "notes": "Use challenging weights but maintain proper form."
+                        "notes": "Focus on back development with proper form."
                     },
                     "Thursday": {
-                        "focus": "HIIT & Flexibility",
+                        "focus": "Triceps",
                         "exercises": [
-                            {"name": "HIIT Circuit", "details": "30 seconds work, 30 seconds rest for 15 minutes (Jumping jacks, Squat jumps, Mountain climbers, High knees)"},
-                            {"name": "Yoga Flow", "details": "15 minutes focusing on flexibility"}
+                            {"name": "Zig zag rod incline bench press", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Cable reverse extension", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Rope overhead extension", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Back dips", "details": "3-4 sets of 8-12 reps"}
                         ],
-                        "notes": "Push yourself during the work intervals, fully recover during rest periods."
+                        "notes": "Focus on tricep toning and strength."
                     },
                     "Friday": {
-                        "focus": "Full Body",
+                        "focus": "Legs",
                         "exercises": [
-                            {"name": "Circuit Training", "details": "3 rounds of: 12 squats, 10 push-ups, 12 lunges per leg, 10 dumbbell rows per arm, 30-second plank"}
+                            {"name": "Weight squats", "details": "3-4 sets of 10-12 reps"},
+                            {"name": "Weighted lunges", "details": "3-4 sets of 10-12 reps each leg"},
+                            {"name": "Hamstring leg press", "details": "3-4 sets of 12-15 reps"},
+                            {"name": "Calf machine leg raises", "details": "3-4 sets of 12-15 reps"},
+                            {"name": "Reverse leg extension", "details": "3-4 sets of 12-15 reps"}
                         ],
-                        "notes": "Perform the circuit with minimal rest between exercises, rest 1-2 minutes between rounds."
+                        "notes": "Focus on lower body strength and toning."
                     },
                     "Saturday": {
-                        "focus": "Cardio & Toning",
+                        "focus": "Full Body",
                         "exercises": [
-                            {"name": "Brisk Walking, Jogging, or Dancing", "details": "20 minutes"},
-                            {"name": "Bodyweight Squats", "details": "3 sets of 15 reps"},
-                            {"name": "Glute Kickbacks", "details": "3 sets of 12 reps per leg"},
-                            {"name": "Arm Circles", "details": "3 sets of 15 in each direction"}
+                            {"name": "Circuit training", "details": "3 rounds of mixed exercises"},
+                            {"name": "Cardio", "details": "20-30 minutes moderate intensity"}
                         ],
-                        "notes": "Focus on engaging muscles throughout all movements."
+                        "notes": "Combine strength and cardio for overall fitness."
                     }
                 }
             }
         # Hardcore intensity workouts
         else:  # hardcore
+            hardcore_note = "HARDCORE LEVEL: Increase weight and sets or repetitions for maximum intensity and muscle growth."
             workout_plans = {
                 "male": {
                     "Monday": {
-                        "focus": "Chest & Triceps",
+                        "focus": "Chest",
                         "exercises": [
-                            {"name": "Explosive Push-ups", "details": "4 sets of 15 reps"},
-                            {"name": "Clap Push-ups", "details": "3 sets of 10 reps"},
-                            {"name": "Diamond Push-ups", "details": "4 sets of 12 reps"},
-                            {"name": "Tricep Dips", "details": "4 sets of 15 reps"}
+                            {"name": "Flat bench press", "details": "4-5 sets of 6-10 reps (heavy weight)"},
+                            {"name": "Cable flies", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Incline dumbbell flies", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Upper cable flies", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Butterfly chest dips", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Incline bench press", "details": "4-5 sets of 6-10 reps"},
+                            {"name": "Bent over flies", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Butterfly dumbbell", "details": "4-5 sets of 12-15 reps"}
                         ],
-                        "notes": "Perform exercises with explosive power while maintaining proper form."
+                        "notes": hardcore_note + " Focus on maximum muscle stimulation."
                     },
                     "Tuesday": {
-                        "focus": "HIIT Cardio",
+                        "focus": "Biceps",
                         "exercises": [
-                            {"name": "HIIT Circuit", "details": "45 seconds work, 15 seconds rest for 20 minutes"},
-                            {"name": "Burpees", "details": "4 sets of 15 reps"},
-                            {"name": "Mountain Climbers", "details": "4 sets of 30 reps per leg"},
-                            {"name": "Squat Jumps", "details": "4 sets of 20 reps"}
+                            {"name": "Zig zag bar curls", "details": "4-5 sets of 8-12 reps (heavy weight)"},
+                            {"name": "Hammer curls", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Cable curls", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Cable handle curls", "details": "4-5 sets of 10-15 reps"}
                         ],
-                        "notes": "Push yourself to maximum intensity during work intervals."
+                        "notes": hardcore_note + " Push to muscle failure."
                     },
                     "Wednesday": {
-                        "focus": "Back & Biceps",
+                        "focus": "Back",
                         "exercises": [
-                            {"name": "Dumbbell Rows", "details": "4 sets of 15 reps per arm"},
-                            {"name": "Superman Holds", "details": "4 sets of 45 seconds"},
-                            {"name": "Bicep Curls", "details": "4 sets of 15 reps"},
-                            {"name": "Hammer Curls", "details": "4 sets of 15 reps"}
+                            {"name": "Pull-ups", "details": "4-5 sets of 8-15 reps (add weight if needed)"},
+                            {"name": "Barbell rowing", "details": "4-5 sets of 6-10 reps (heavy weight)"},
+                            {"name": "Lat pulldowns", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "T-bar rows", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Close grip pulldowns", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Cable rowing", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Single dumbbell rowing", "details": "4-5 sets of 10-15 reps each arm"}
                         ],
-                        "notes": "Use heavy weights with perfect form."
+                        "notes": hardcore_note + " Focus on back width and thickness."
                     },
                     "Thursday": {
-                        "focus": "Legs & Core",
+                        "focus": "Triceps",
                         "exercises": [
-                            {"name": "Bodyweight Squats", "details": "4 sets of 25 reps"},
-                            {"name": "Walking Lunges", "details": "4 sets of 20 reps per leg"},
-                            {"name": "Planks", "details": "4 sets of 60-90 seconds"},
-                            {"name": "Russian Twists", "details": "4 sets of 25 reps per side"}
+                            {"name": "Zig zag rod incline bench press", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Cable reverse extension", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Rope overhead extension", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Back dips", "details": "4-5 sets of 8-15 reps (add weight if needed)"}
                         ],
-                        "notes": "Focus on explosive movements and core stability."
+                        "notes": hardcore_note + " Maximum tricep development."
                     },
                     "Friday": {
-                        "focus": "Full Body Circuit",
+                        "focus": "Legs",
                         "exercises": [
-                            {"name": "Circuit Training", "details": "5 rounds of: 20 push-ups, 20 squats, 20 burpees, 20 mountain climbers"},
-                            {"name": "Planks", "details": "3 sets of 60 seconds"}
+                            {"name": "Weight squats", "details": "4-5 sets of 6-12 reps (heavy weight)"},
+                            {"name": "Weighted lunges", "details": "4-5 sets of 10-15 reps each leg"},
+                            {"name": "Hamstring leg press", "details": "4-5 sets of 12-20 reps"},
+                            {"name": "Calf machine leg raises", "details": "4-5 sets of 15-20 reps"},
+                            {"name": "Reverse leg extension", "details": "4-5 sets of 12-20 reps"}
                         ],
-                        "notes": "Minimal rest between exercises, 2 minutes between rounds."
+                        "notes": hardcore_note + " Focus on leg power and mass."
                     },
                     "Saturday": {
-                        "focus": "Strength & Power",
+                        "focus": "Full Body Power",
                         "exercises": [
-                            {"name": "Explosive Push-ups", "details": "4 sets of 12 reps"},
-                            {"name": "Squat Jumps", "details": "4 sets of 15 reps"},
-                            {"name": "Dumbbell Rows", "details": "4 sets of 12 reps per arm"},
-                            {"name": "Burpees", "details": "4 sets of 10 reps"}
+                            {"name": "High intensity circuit", "details": "4-5 rounds of compound exercises"},
+                            {"name": "HIIT cardio", "details": "20-30 minutes high intensity"}
                         ],
-                        "notes": "Focus on power and explosive movements."
+                        "notes": hardcore_note + " Maximum intensity training."
                     }
                 },
                 "female": {
                     "Monday": {
-                        "focus": "Lower Body Power",
+                        "focus": "Chest",
                         "exercises": [
-                            {"name": "Squat Jumps", "details": "4 sets of 15 reps"},
-                            {"name": "Lunges", "details": "4 sets of 15 reps per leg"},
-                            {"name": "Glute Bridges", "details": "4 sets of 20 reps"},
-                            {"name": "Calf Raises", "details": "4 sets of 20 reps"}
+                            {"name": "Flat bench press", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Cable flies", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Incline dumbbell flies", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Upper cable flies", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Butterfly chest dips", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Incline bench press", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Bent over flies", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Butterfly dumbbell", "details": "4-5 sets of 12-15 reps"}
                         ],
-                        "notes": "Focus on explosive power in lower body movements."
+                        "notes": hardcore_note + " Focus on muscle definition and strength."
                     },
                     "Tuesday": {
-                        "focus": "HIIT Cardio",
+                        "focus": "Biceps",
                         "exercises": [
-                            {"name": "HIIT Circuit", "details": "45 seconds work, 15 seconds rest for 20 minutes"},
-                            {"name": "Burpees", "details": "4 sets of 12 reps"},
-                            {"name": "Mountain Climbers", "details": "4 sets of 25 reps per leg"},
-                            {"name": "High knees", "details": "4 sets of 30 seconds"}
+                            {"name": "Zig zag bar curls", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Hammer curls", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Cable curls", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Cable handle curls", "details": "4-5 sets of 12-15 reps"}
                         ],
-                        "notes": "Push yourself to maximum intensity during work intervals."
+                        "notes": hardcore_note + " Focus on arm definition."
                     },
                     "Wednesday": {
-                        "focus": "Upper Body Strength",
+                        "focus": "Back",
                         "exercises": [
-                            {"name": "Push-ups", "details": "4 sets of 15 reps"},
-                            {"name": "Dumbbell Rows", "details": "4 sets of 15 reps per arm"},
-                            {"name": "Tricep Dips", "details": "4 sets of 15 reps"},
-                            {"name": "Shoulder Press", "details": "4 sets of 15 reps"}
+                            {"name": "Pull-ups/Assisted pull-ups", "details": "4-5 sets of 8-15 reps"},
+                            {"name": "Barbell rowing", "details": "4-5 sets of 8-12 reps"},
+                            {"name": "Lat pulldowns", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "T-bar rows", "details": "4-5 sets of 10-12 reps"},
+                            {"name": "Close grip pulldowns", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Cable rowing", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Single dumbbell rowing", "details": "4-5 sets of 12-15 reps each arm"}
                         ],
-                        "notes": "Use challenging weights while maintaining perfect form."
+                        "notes": hardcore_note + " Focus on back strength and posture."
                     },
                     "Thursday": {
-                        "focus": "Core & Stability",
+                        "focus": "Triceps",
                         "exercises": [
-                            {"name": "Planks", "details": "4 sets of 60-90 seconds"},
-                            {"name": "Bicycle Crunches", "details": "4 sets of 25 reps per side"},
-                            {"name": "Russian Twists", "details": "4 sets of 25 reps per side"},
-                            {"name": "Leg Raises", "details": "4 sets of 15 reps"}
+                            {"name": "Zig zag rod incline bench press", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Cable reverse extension", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Rope overhead extension", "details": "4-5 sets of 12-15 reps"},
+                            {"name": "Back dips", "details": "4-5 sets of 8-15 reps"}
                         ],
-                        "notes": "Focus on core stability and controlled movements."
+                        "notes": hardcore_note + " Focus on tricep definition."
                     },
                     "Friday": {
-                        "focus": "Full Body Circuit",
+                        "focus": "Legs",
                         "exercises": [
-                            {"name": "Circuit Training", "details": "4 rounds of: 15 push-ups, 20 squats, 15 burpees, 20 lunges per leg, 45-second plank"}
+                            {"name": "Weight squats", "details": "4-5 sets of 10-15 reps"},
+                            {"name": "Weighted lunges", "details": "4-5 sets of 12-15 reps each leg"},
+                            {"name": "Hamstring leg press", "details": "4-5 sets of 15-20 reps"},
+                            {"name": "Calf machine leg raises", "details": "4-5 sets of 15-20 reps"},
+                            {"name": "Reverse leg extension", "details": "4-5 sets of 15-20 reps"}
                         ],
-                        "notes": "Minimal rest between exercises, 90 seconds between rounds."
+                        "notes": hardcore_note + " Focus on lower body strength and toning."
                     },
                     "Saturday": {
-                        "focus": "Power & Conditioning",
+                        "focus": "Full Body Power",
                         "exercises": [
-                            {"name": "Squat Jumps", "details": "4 sets of 15 reps"},
-                            {"name": "Push-ups", "details": "4 sets of 12 reps"},
-                            {"name": "Burpees", "details": "4 sets of 10 reps"},
-                            {"name": "Mountain Climbers", "details": "4 sets of 30 reps per leg"}
+                            {"name": "High intensity circuit", "details": "4-5 rounds of compound exercises"},
+                            {"name": "HIIT cardio", "details": "20-30 minutes high intensity"}
                         ],
-                        "notes": "Focus on explosive power and cardiovascular conditioning."
+                        "notes": hardcore_note + " Maximum intensity for results."
                     }
                 }
             }
@@ -2095,5 +2243,9 @@ def generate_daily_workout(day, gender, intensity, week):
             if isinstance(exercise, dict) and "name" in exercise:
                 video_url = get_exercise_video_url(exercise["name"])
                 exercise["video_url"] = video_url
+    
+    # Add muscle group image
+    if "focus" in workout:
+        workout["image_url"] = get_muscle_group_image(workout["focus"])
     
     return workout
