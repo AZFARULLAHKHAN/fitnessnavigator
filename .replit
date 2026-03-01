@@ -1,0 +1,7 @@
+run = "cd FitnessNavigator && python app.py"
+
+[nix]
+channel = "stable-22_11"
+
+[deployment]
+run = ["sh", "-c", "cd FitnessNavigator && python app.py"]
